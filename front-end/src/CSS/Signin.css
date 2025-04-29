@@ -1,0 +1,43 @@
+.line {
+        border-bottom: 1px solid #858585;
+        width: 100%;
+        margin: 20px 0;
+}
+
+.signin-input:focus {
+        border-color: #007bff ;
+        /* Chỉ đổi màu viền thay vì thay đổi kích thước */
+        outline: none !important;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5) !important; /* Hiệu ứng nhẹ khi focus */
+        /* Tắt hiệu ứng nhấp nháy */
+}
+
+#signin-signin {
+        background-color: #1877f2 !important;
+        /* Màu cam tùy chỉnh */
+        color: white !important;
+}
+
+#signin-signin:hover {
+        background-color: #5d9bec !important;
+        /* Màu cam tùy chỉnh */
+        color: white !important;
+}
+
+#signin-forget {
+        padding: 10px 10px;
+        text-decoration: underline;
+        color: #1877f2;
+}
+
+#signin-signup {
+        background-color: #42b72a !important;
+        /* Màu cam tùy chỉnh */
+        color: white !important;
+}
+
+#signin-signup:hover {
+        background-color: #6bcc57 !important;
+        /* Màu cam tùy chỉnh */
+        color: white !important;
+}

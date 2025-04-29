@@ -1,0 +1,68 @@
+/* Overlay */
+.edit-profile-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Form container */
+.edit-profile-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Tiêu đề */
+.edit-profile-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Input group */
+.edit-profile-group {
+  margin-bottom: 16px;
+}
+
+.edit-profile-label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 8px;
+}
+
+.edit-profile-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+/* Button group */
+.edit-profile-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.edit-profile-save {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-profile-cancel {
+  background-color: #e5e7eb;
+  color: black;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}

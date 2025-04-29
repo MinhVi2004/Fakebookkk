@@ -1,0 +1,19 @@
+/* confirm.css */
+.custom-swal {
+     width: 300px !important;
+     padding: 1rem !important;
+     font-size: 14px;
+     border-radius: 10px;
+}
+
+.custom-swal .swal2-title {
+     font-size: 18px;
+}
+
+.custom-swal .swal2-html-container {
+     font-size: 14px;
+}
+
+.custom-swal .swal2-actions {
+     gap: 10px;
+}
