@@ -37,7 +37,9 @@ const TopBar = () => {
         }, []);
      return (
           <div className="top-bar">
-               <div className="logo">Fakebook</div>
+               <div className="logo"><Link to="/home">
+                         Fakebook
+                    </Link></div>
 
                <div className="nav-links">
                     <Link to="/home" className="home-button category-button">
