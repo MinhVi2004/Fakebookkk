@@ -1,15 +1,24 @@
 package com.example.backend.Service;
 
 import com.example.backend.DTO.BaiVietDTO;
+import com.example.backend.DTO.BaiVietDinhKemDTO;
+import com.example.backend.Entity.BaiVietDinhKemEntity;
 import com.example.backend.Entity.BaiVietEntity;
 import com.example.backend.Mapper.BaiVietMapper;
+import com.example.backend.Repository.BaiVietDinhKemRepository;
 import com.example.backend.Repository.BaiVietRepository;
-import com.example.backend.Service.BaiVietService;
 
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,8 +27,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BaiVietServiceImpl implements BaiVietService {
 
-    private BaiVietRepository baiVietRepository;      
-
+    private BaiVietRepository baiVietRepository;
+    private BaiVietDinhKemService baiVietDinhKemService;
+    private FileService fileService;
 
     @Override
     public BaiVietDTO getBaiVietById(int maBV) {
@@ -45,6 +55,41 @@ public class BaiVietServiceImpl implements BaiVietService {
         BaiVietEntity savedBaiVietEntity = baiVietRepository.save(baiVietEntity);
         return BaiVietMapper.toDTO(savedBaiVietEntity);
     }
+
+    @Override
+public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> dinhKems, List<String> loaiDKs) {
+    // Gán giá trị mặc định
+    baiVietDTO.setThoiGian(LocalDateTime.now().toString());
+    baiVietDTO.setTrangThai("Bình Thường");
+
+    // Lưu bài viết
+    BaiVietEntity baiVietEntity = BaiVietMapper.toEntity(baiVietDTO);
+    BaiVietEntity savedBaiVietEntity = baiVietRepository.save(baiVietEntity);
+
+    // Lưu đính kèm (nếu có)
+    if (dinhKems != null && !dinhKems.isEmpty()) {
+        for (int i = 0; i < dinhKems.size(); i++) {
+            try {
+                String base64 = dinhKems.get(i); // Đã là base64 thuần
+                String type = (loaiDKs != null && loaiDKs.size() > i) ? loaiDKs.get(i) : "unknown";
+
+                String fileName = fileService.saveFile("DinhKem", base64);
+
+                BaiVietDinhKemDTO dinhKem = new BaiVietDinhKemDTO();
+                dinhKem.setMaBV(savedBaiVietEntity.getMaBV());
+                dinhKem.setLinkDK(fileName);
+                dinhKem.setLoaiDK(type);
+                baiVietDinhKemService.createBaiVietDinhKem(dinhKem);
+
+            } catch (IOException | IllegalArgumentException e) {
+                throw new RuntimeException("Không thể xử lý file đính kèm: ", e);
+            }
+        }
+    }
+
+    return BaiVietMapper.toDTO(savedBaiVietEntity);
+}
+
 
     @Override
     public BaiVietDTO updateBaiViet(BaiVietDTO baiVietDTO) {
@@ -102,6 +147,14 @@ public class BaiVietServiceImpl implements BaiVietService {
     @Override
     public List<BaiVietDTO> getBaiVietByTrangThai(String trangThai) {
         List<BaiVietEntity> baiVietEntities = baiVietRepository.findByTrangThai(trangThai);
+        return baiVietEntities.stream()
+                .map(BaiVietMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BaiVietDTO> findAllByOrderByThoiGianDesc() {
+        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllByOrderByThoiGianDesc();
         return baiVietEntities.stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());

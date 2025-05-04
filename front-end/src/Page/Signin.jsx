@@ -30,7 +30,7 @@ function Signin() {
                toast.success("Đăng nhập thành công");
 
                // Chuyển hướng đến trang profile
-               goToProfile(); 
+               goToProfile();
           } else {
                toast.error(data.message || "Đăng nhập thất bại");
           }
