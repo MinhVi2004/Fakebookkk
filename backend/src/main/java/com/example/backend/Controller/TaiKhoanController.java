@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.DTO.TaiKhoanDTO;
+import com.example.backend.Entity.TaiKhoanEntity;
 import com.example.backend.Repository.TaiKhoanRepository;
 import com.example.backend.Service.TaiKhoanService;
 
@@ -30,10 +31,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @CrossOrigin(origins = "http://localhost:3000") // Thêm dòng này react được phép truy cập
 public class TaiKhoanController {
 
-      @Autowired
+     @Autowired
      private TaiKhoanService taiKhoanService;
-     
-
 
      @PostMapping("/signup")
      public ResponseEntity<?> signup(@RequestBody TaiKhoanDTO taiKhoanDTO) {
@@ -73,7 +72,7 @@ public class TaiKhoanController {
           TaiKhoanDTO taiKhoanDTO = taiKhoanService.checkSignin(loginRequest.getTenDangNhap(),
                     loginRequest.getMatKhau());
           if (taiKhoanDTO != null) {
-               if(taiKhoanDTO.getTrangThai().equals("Vô Hiệu Hóa")) {
+               if (taiKhoanDTO.getTrangThai().equals("Vô Hiệu Hóa")) {
                     response.put("status", "error");
                     response.put("message", "Tài khoản của bạn đã bị vô hiệu hóa");
                     return ResponseEntity.badRequest().body(response);
@@ -91,7 +90,7 @@ public class TaiKhoanController {
      }
 
      @PutMapping("/update")
-     public ResponseEntity<?> updateTaiKhoan( @RequestBody TaiKhoanDTO taiKhoanDTO) {
+     public ResponseEntity<?> updateTaiKhoan(@RequestBody TaiKhoanDTO taiKhoanDTO) {
           TaiKhoanDTO updated = taiKhoanService.updateTaiKhoan(taiKhoanDTO);
           if (updated != null) {
                return ResponseEntity.ok(updated);
@@ -100,6 +99,30 @@ public class TaiKhoanController {
                response.put("status", "error");
                response.put("message", "Không tìm thấy người dùng để cập nhật");
                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+          }
+     }
+
+     @PutMapping("/update-profile/{maTK}")
+     public ResponseEntity<?> updateProfile(
+               @PathVariable Integer maTK,
+               @RequestParam("userName") String userName,
+               @RequestParam(value = "profilePic", required = false) MultipartFile profilePic,
+               @RequestParam(value = "coverPic", required = false) MultipartFile coverPic) {
+          try {
+               System.out.println("Nhận yêu cầu cập nhật thông tin cho maTK: " + maTK);
+               TaiKhoanEntity updatedUser = taiKhoanService.updateProfile(maTK, userName, profilePic, coverPic);
+               Map<String, Object> response = new HashMap<>();
+               response.put("status", "success");
+               response.put("message", "Cập nhật thông tin thành công");
+               response.put("data", updatedUser); // Trả về dữ liệu người dùng đã cập nhật
+
+               return ResponseEntity.ok(response);
+          } catch (RuntimeException ex) {
+               System.err.println("Lỗi khi cập nhật thông tin: " + ex.getMessage());
+               Map<String, Object> error = new HashMap<>();
+               error.put("status", "error");
+               error.put("message", "Cập nhật thất bại: " + ex.getMessage());
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
           }
      }
 
