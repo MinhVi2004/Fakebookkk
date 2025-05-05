@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Data
 public class BaiVietDTO {
     private int maBV;
     private int maTK;

@@ -1,5 +1,7 @@
 package com.example.backend.Entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,5 +27,5 @@ public class BinhLuanEntity {
     private String noiDung;
 
     @Column(name = "ThoiGian")
-    private String thoiGian;
+    private LocalDateTime thoiGian;
 }

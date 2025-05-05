@@ -1,5 +1,7 @@
 package com.example.backend.DTO;
 
+import java.time.LocalDateTime;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -7,8 +9,8 @@ import lombok.*;
 @Getter
 @Setter
 public class LuotThichDTO {
-    private int maLT;
+    // private int maLT;
     private int maTK;
     private int maBV;
-    private String thoiGian;
+    private LocalDateTime thoiGian;
 }
