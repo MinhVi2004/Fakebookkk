@@ -85,7 +85,7 @@ public class QLBaiVietController {
         List<BaiVietDTO> list = baiVietService.getBaiVietByMaTK(maTK);
         return ResponseEntity.ok(list);
     }
-
+    
     // Lấy bài viết theo MaTK và LoaiChiaSe
     @GetMapping("/posts/byMaTKAndLoaiChiaSe")
     public ResponseEntity<?> getPostByMaTKAndLoaiChiaSe(

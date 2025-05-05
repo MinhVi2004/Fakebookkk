@@ -9,8 +9,8 @@ function PostManager() {
      const [userInfo, setUserInfo] = useState(null); // Thêm state để lưu thông tin người dùng
 
      useEffect(() => {
-          fetch("http://localhost:8080/api/fakebook/admin/posts")
-               .then((res) => res.json())
+      fetch("http://localhost:8080/api/fakebook/admin/posts")
+        .then((res) => res.json())
         .then(async (data) => {
           const postsWithUserInfo = await Promise.all(
             data.map(async (post) => {
@@ -25,10 +25,10 @@ function PostManager() {
             })
           );
           setPosts(postsWithUserInfo); // Cập nhật luôn posts có user
-               })
+        })
         .catch((err) => console.error("Lỗi khi lấy danh sách bài viết:", err));
-     }, []);
-
+    }, []);
+    
 
      const handleClose = () => setSelectedPost(null);
 
@@ -38,14 +38,14 @@ function PostManager() {
                <ul className="user-list">
                     {posts.map((post) => (
                          <li
-                              key={post.maBV}
-                              className="user-item"
+                         key={post.maBV}
+                         className="user-item"
                          onClick={() => {
                            setSelectedPost(post);
                          }}
-                         >
+                       >
                          <div style={{ display: "flex", alignItems: "center" }}>
-                              <img
+                           <img
                              src={post.nguoiDang?.profilePic ? `../Resource/Avatar/${post.nguoiDang.profilePic}` : "../Resource/default-avatar.png"}
                              alt="Avatar"
                              style={{
@@ -55,13 +55,13 @@ function PostManager() {
                                objectFit: "cover",
                                marginRight: "10px",
                              }}
-                              />
-                              <div>
+                           />
+                           <div>
                              <h4>{post.nguoiDang?.hoTen}</h4> {/* hoặc tiêu đề bài viết nếu có */}
                              <p> {post.noiDung}</p>
                            </div>
-                              </div>
-                         </li>
+                         </div>
+                       </li>
                        
                     ))}
                </ul>
@@ -138,31 +138,31 @@ function PostDetailModal({ post, onClose, setPosts, setSelectedPost, userInfo })
                <p>
                     <strong>Đính kèm:</strong>
                </p>
-          <div className="attachments">
-               {post.dinhKems?.map((dk) => (
-                    <div key={dk.maBV_DK} className="attachment-item">
-                         {dk.loaiDK === "image" ? (
-                              <img
-                                   src={`../Resource/Attachment/${dk.linkDK}`}
-                                   alt="Đính kèm"
+               <div className="attachments">
+                    {post.dinhKems?.map((dk) => (
+                         <div key={dk.maBV_DK} className="attachment-item">
+                              {dk.loaiDK === "image" ? (
+                                   <img
+                                        src={`../Resource/Attachment/${dk.linkDK}`}
+                                        alt="Đính kèm"
                                         style={{
                                              maxWidth: "100px",
                                              marginRight: "10px",
                                         }}
-                              />
-                         ) : (
+                                   />
+                              ) : (
                                    <video
-                                   href={`../Resource/Attachment/${dk.linkDK}`}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                              >
-                                   {dk.linkDK}
+                                        href={`../Resource/Attachment/${dk.linkDK}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                   >
+                                        {dk.linkDK}
                                    </video>
-                         )}
-                    </div>
-               ))}
+                              )}
+                         </div>
+                    ))}
+               </div>
           </div>
-     </div>
      );
 }
 

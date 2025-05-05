@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BaiVietMapper {
-
+      
       // Chuyển từ BaiVietEntity sang BaiVietDTO
       public static BaiVietDTO toDTO(BaiVietEntity baiVietEntity) {
             BaiVietDTO baiVietDTO = new BaiVietDTO();
