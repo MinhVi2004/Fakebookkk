@@ -6,17 +6,29 @@ import confirm from "../Other/Confirm";
 function PostManager() {
      const [posts, setPosts] = useState([]);
      const [selectedPost, setSelectedPost] = useState(null);
+     const [userInfo, setUserInfo] = useState(null); // Thêm state để lưu thông tin người dùng
 
      useEffect(() => {
           fetch("http://localhost:8080/api/fakebook/admin/posts")
                .then((res) => res.json())
-               .then((data) => {
-                    setPosts(data); // data là mảng bài viết
+        .then(async (data) => {
+          const postsWithUserInfo = await Promise.all(
+            data.map(async (post) => {
+              try {
+                const response = await fetch(`http://localhost:8080/api/fakebook/admin/users/${post.maTK}`);
+                const userData = await response.json();
+                return { ...post, nguoiDang: userData }; // Gán user vào post
+              } catch (error) {
+                console.error(`Lỗi lấy user cho post ${post.maBV}:`, error);
+                return post; // Nếu lỗi thì giữ nguyên post
+              }
+            })
+          );
+          setPosts(postsWithUserInfo); // Cập nhật luôn posts có user
                })
-               .catch((err) =>
-                    console.error("Lỗi khi lấy danh sách bài viết:", err)
-               );
+        .catch((err) => console.error("Lỗi khi lấy danh sách bài viết:", err));
      }, []);
+
 
      const handleClose = () => setSelectedPost(null);
 
@@ -28,17 +40,29 @@ function PostManager() {
                          <li
                               key={post.maBV}
                               className="user-item"
-                              onClick={() => setSelectedPost(post)}
+                         onClick={() => {
+                           setSelectedPost(post);
+                         }}
                          >
+                         <div style={{ display: "flex", alignItems: "center" }}>
                               <img
-                                   src={`../Resource/Post/${post.hinhAnh}`}
-                                   alt="Thumbnail"
+                             src={post.nguoiDang?.profilePic ? `../Resource/Avatar/${post.nguoiDang.profilePic}` : "../Resource/default-avatar.png"}
+                             alt="Avatar"
+                             style={{
+                               width: "40px",
+                               height: "40px",
+                               borderRadius: "50%",
+                               objectFit: "cover",
+                               marginRight: "10px",
+                             }}
                               />
                               <div>
-                                   <h4>{post.tieuDe}</h4>
-                                   <p>Người đăng: {post.nguoiDang?.hoTen}</p>
+                             <h4>{post.nguoiDang?.hoTen}</h4> {/* hoặc tiêu đề bài viết nếu có */}
+                             <p> {post.noiDung}</p>
+                           </div>
                               </div>
                          </li>
+                       
                     ))}
                </ul>
 
@@ -48,13 +72,14 @@ function PostManager() {
                          onClose={handleClose}
                          setPosts={setPosts}
                          setSelectedPost={setSelectedPost}
+                         userInfo={userInfo} // Chuyển thông tin người dùng cho modal
                     />
                )}
           </div>
      );
 }
 
-function PostDetailModal({ post, onClose, setPosts, setSelectedPost }) {
+function PostDetailModal({ post, onClose, setPosts, setSelectedPost, userInfo }) {
      const handleToggleStatus = async () => {
           const isHidden = post.trangThai === "Đã Ẩn";
 
@@ -67,17 +92,20 @@ function PostDetailModal({ post, onClose, setPosts, setSelectedPost }) {
 
           if (!confirmed) return;
 
-          const url = isHidden
-               ? `http://localhost:8080/api/fakebook/admin/posts/show/${post.maBV}`
-               : `http://localhost:8080/api/fakebook/admin/posts/hide/${post.maBV}`;
+          const newTrangThai = isHidden ? "Mới" : "Đã Ẩn";
+          const url = `http://localhost:8080/api/fakebook/admin/posts/${
+               post.maBV
+          }/status?trangThai=${encodeURIComponent(newTrangThai)}`;
 
           fetch(url, { method: "PUT" })
                .then((res) => {
                     if (!res.ok)
-                         throw new Error("Lỗi khi cập nhật trạng thái bài viết");
-                    return res.json();
+                         throw new Error(
+                              "Lỗi khi cập nhật trạng thái bài viết"
+                         );
+                    return res.json(); // đảm bảo backend trả BaiVietDTO mới
                })
-               .then((data) => {
+               .then((updatedPost) => {
                     toast.success(
                          `Đã ${
                               isHidden ? "hiển thị" : "ẩn"
@@ -85,10 +113,10 @@ function PostDetailModal({ post, onClose, setPosts, setSelectedPost }) {
                     );
                     setPosts((prev) =>
                          prev.map((p) =>
-                              p.maBV === post.maBV ? data : p
+                              p.maBV === post.maBV ? updatedPost : p
                          )
                     );
-                    setSelectedPost(data);
+                    setSelectedPost(updatedPost);
                })
                .catch((err) => {
                     console.error("Lỗi cập nhật trạng thái bài viết:", err);
@@ -98,10 +126,18 @@ function PostDetailModal({ post, onClose, setPosts, setSelectedPost }) {
 
      return (
           <div className="modal-info">
-          <p><strong>Nội dung:</strong> {post.noiDung}</p>
-          <p><strong>Người đăng:</strong> {post.nguoiDang?.hoTen}</p>
-          <p><strong>Thời gian:</strong> {post.thoiGian}</p>
-          <p><strong>Đính kèm:</strong></p>
+               <p>
+                    <strong>Nội dung:</strong> {post.noiDung}
+               </p>
+               <p>
+                    <strong>Người đăng:</strong> {post.nguoiDang.hoTen}
+               </p>
+               <p>
+                    <strong>Thời gian:</strong> {post.thoiGian}
+               </p>
+               <p>
+                    <strong>Đính kèm:</strong>
+               </p>
           <div className="attachments">
                {post.dinhKems?.map((dk) => (
                     <div key={dk.maBV_DK} className="attachment-item">
@@ -109,16 +145,19 @@ function PostDetailModal({ post, onClose, setPosts, setSelectedPost }) {
                               <img
                                    src={`../Resource/Attachment/${dk.linkDK}`}
                                    alt="Đính kèm"
-                                   style={{ maxWidth: "100px", marginRight: "10px" }}
+                                        style={{
+                                             maxWidth: "100px",
+                                             marginRight: "10px",
+                                        }}
                               />
                          ) : (
-                              <a
+                                   <video
                                    href={`../Resource/Attachment/${dk.linkDK}`}
                                    target="_blank"
                                    rel="noopener noreferrer"
                               >
                                    {dk.linkDK}
-                              </a>
+                                   </video>
                          )}
                     </div>
                ))}

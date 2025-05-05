@@ -15,5 +15,5 @@ public class BaiVietDTO {
     private String noiDung;
     private String thoiGian;
       private String trangThai;
-      private List<BaiVietDinhKemDTO> dinhKems; // Assuming this is an array of attachments, adjust as needed
+      private List<BaiVietDinhKemDTO> dinhKems;
 }

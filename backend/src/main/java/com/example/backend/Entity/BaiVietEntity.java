@@ -37,5 +37,4 @@ public class BaiVietEntity {
 
     @OneToMany(mappedBy = "baiVietEntity", fetch = FetchType.LAZY)
     private List<BaiVietDinhKemEntity> dinhKems;
-    // getters and setters
 }

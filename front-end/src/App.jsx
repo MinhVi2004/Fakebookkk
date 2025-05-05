@@ -13,13 +13,13 @@ import PostManager from "./Page/PostManager";
 
 const AppContent = () => {
      const location = useLocation();
-     const hideTopBar = location.pathname === "/signin" || location.pathname === "/signup";
+     const hideTopBar = location.pathname === "/signin" || location.pathname === "/signup"|| location.pathname === "/";
    
      return (
        <>
          {!hideTopBar && <TopBar />}
          <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Signin />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
