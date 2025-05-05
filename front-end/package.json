@@ -19,7 +19,7 @@
     "bootstrap": "^5.3.3",
     "date-fns": "^4.1.0",
     "front-end": "file:",
-    "nexmo": "^2.9.1",
+    "nexmo": "^0.0.7",
     "react": "^19.0.0",
     "react-datepicker": "^8.2.1",
     "react-dom": "^19.0.0",
@@ -27,7 +27,7 @@
     "react-router-dom": "^7.4.1",
     "react-toastify": "^11.0.5",
     "sockjs-client": "^1.6.1",
-    "sweetalert2": "^11.17.2",
+    "sweetalert2": "^11.6.13",
     "sweetalert2-react-content": "^5.1.0"
   },
   "devDependencies": {

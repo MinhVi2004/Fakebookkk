@@ -8,9 +8,8 @@ import lombok.*;
 @Setter
 public class BanBeDTO {
     private int maBB;
-    private int maTK_1;
-    private int maTK_2;
+    private int maTK1;
+    private int maTK2;
     private String trangThaiBB;
     private String ngayTao;
 }
-
