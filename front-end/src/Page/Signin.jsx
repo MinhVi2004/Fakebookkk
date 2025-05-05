@@ -6,7 +6,7 @@ import "./../CSS/Signin.css";
 import { useNavigation } from "../Other/Navigation"; // Import useNavigation từ file navigation.js
 function Signin() {
      sessionStorage.removeItem("userSignin"); // Xóa thông tin người dùng trong sessionStorage khi vào trang đăng nhập
-     const { goToSignup, goToProfile } = useNavigation();
+     const { goToSignup, goToProfile, goToHomePage } = useNavigation();
      const [tenDangNhap, setTenDangNhap] = useState(""); // Khai báo state cho username
      const [matKhau, setMatKhau] = useState(""); // Khai báo state cho password
      async function handlesignin(e) {
@@ -30,7 +30,7 @@ function Signin() {
                toast.success("Đăng nhập thành công");
 
                // Chuyển hướng đến trang profile
-               goToProfile();
+               goToHomePage();
           } else {
                toast.error(data.message || "Đăng nhập thất bại");
           }
