@@ -10,7 +10,9 @@ export default function Profile() {
    
      // Check if user is not signed in, and navigate using useEffect
      useEffect(() => {
+       console.log(sessionStorage.getItem("userSignin"));
        if (!storedUserData) {
+        
          toast.error("Bạn chưa đăng nhập, vui lòng đăng nhập để tiếp tục");
          goToSignin(); // Chuyển hướng đến trang đăng nhập nếu không có thông tin người dùng
        }

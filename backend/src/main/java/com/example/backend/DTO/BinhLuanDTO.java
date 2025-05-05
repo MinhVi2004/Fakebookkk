@@ -1,6 +1,8 @@
 
 package com.example.backend.DTO;
 
+import java.time.LocalDateTime;
+
 import lombok.*;
 
 @NoArgsConstructor
@@ -12,6 +14,6 @@ public class BinhLuanDTO {
     private int maTK;
     private int maBV;
     private String noiDung;
-    private String thoiGian;
+    private LocalDateTime thoiGian;
 }
 
