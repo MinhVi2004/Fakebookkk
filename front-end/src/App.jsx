@@ -9,7 +9,7 @@ import TopBar from "./Page/TopBar";
 import Admin from "./Page/Admin";
 import UserManager from "./Page/UserManager";
 import PostManager from "./Page/PostManager";
-import HomePage from "./Page/HomePage";
+import Home from "./Page/Home";
 
 const AppContent = () => {
      const location = useLocation();
@@ -20,7 +20,7 @@ const AppContent = () => {
          {!hideTopBar && <TopBar />}
          <Routes>
           <Route path="/" element={<Signin />} />
-          <Route path="/home" element={<HomePage />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/profile" element={<Profile />} />
