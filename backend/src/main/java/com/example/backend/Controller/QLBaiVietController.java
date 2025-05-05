@@ -68,10 +68,19 @@ public class QLBaiVietController {
                 .body("Bài viết không tồn tại để cập nhật.");
     }
 
-    // Thay đổi trạng thái bài viết
-    @PutMapping("/posts/{maBV}/status")
-    public ResponseEntity<?> changeStatusPost(@PathVariable int maBV, @RequestParam String trangThai) {
-        boolean isUpdated = baiVietService.changeStatusBaiViet(maBV, trangThai);
+    // Ẩn bài viết
+    @PutMapping("/posts/{maBV}/hidePost")
+    public ResponseEntity<?> hidePost(@PathVariable int maBV) {
+        boolean isUpdated = baiVietService.changeStatusBaiViet(maBV, "Đã Ẩn");
+        if (isUpdated) {
+            return ResponseEntity.ok("Trạng thái bài viết đã được thay đổi.");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Bài viết không tồn tại để thay đổi trạng thái.");
+    }
+    @PutMapping("/posts/{maBV}/unHidePost")
+    public ResponseEntity<?> unHidePost(@PathVariable int maBV) {
+        boolean isUpdated = baiVietService.changeStatusBaiViet(maBV, "Bình Thường");
         if (isUpdated) {
             return ResponseEntity.ok("Trạng thái bài viết đã được thay đổi.");
         }

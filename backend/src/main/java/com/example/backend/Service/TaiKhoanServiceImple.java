@@ -97,7 +97,6 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           }
           return null;
      }
-
      @Override
      public List<TaiKhoanDTO> getAllTaiKhoan() {
           List<TaiKhoanEntity> entities = taiKhoanRepository.findAll();

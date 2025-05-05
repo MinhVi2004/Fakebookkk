@@ -54,10 +54,6 @@ const Home = () => {
     fetchPosts();
   };
 
-  // Khi cập nhật bài viết → gọi lại API
-  const handleUpdatePost = () => {
-    fetchPosts();
-  };
 
   return (
     <div className="home-page">
@@ -72,7 +68,6 @@ const Home = () => {
                 key={post.maBV}
                 post={post}
                 onDelete={handleDeletePost}
-                onUpdate={handleUpdatePost}
               />
             ))
           ) : (

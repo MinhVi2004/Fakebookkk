@@ -136,6 +136,72 @@ public class BaiVietController {
 
         return ResponseEntity.ok(baiVietResponseList);
     }
+    @GetMapping("/hided")
+    public ResponseEntity<?> getAllPostHided() {
+        List<BaiVietDTO> baiVietList = baiVietService.findAllByOrderByThoiGianDesc();
+        List<BaiVietResponseDTO> baiVietResponseList = new ArrayList<BaiVietResponseDTO>();
+
+        for (BaiVietDTO baiVietDTO : baiVietList) {
+            TaiKhoanDTO taiKhoanDTO = taiKhoanService.getTaiKhoanById(baiVietDTO.getMaTK());
+
+            if (baiVietDTO.getTrangThai().equals("Đã Ẩn")) {
+                BaiVietResponseDTO baiVietResponseDTO = new BaiVietResponseDTO();
+
+                // Lấy danh sách file đính kèm
+                List<BaiVietDinhKemDTO> baiVietDinhKemList = baiVietDinhKemService
+                        .getAllBaiVietDinhKemByMaBV(baiVietDTO.getMaBV());
+
+                // Lấy lượt thích và bình luận
+                List<LuotThichDTO> luotThichList = luotThichService.findByMaBV(baiVietDTO.getMaBV());
+                List<BinhLuanDTO> binhLuanList = binhLuanService.findByMaBV(baiVietDTO.getMaBV());
+
+                baiVietResponseDTO.setFromBaiVietDTO(baiVietDTO);
+                baiVietResponseDTO.setLuotThichList(luotThichList);
+                baiVietResponseDTO.setTaiKhoanBVAndBL(new TaiKhoanBVAndBLDTO(taiKhoanDTO));
+
+                // Cập nhật lại đường dẫn của file đính kèm
+                List<BaiVietDinhKemResponseDTO> baiVietDinhKemResponseList = new ArrayList<BaiVietDinhKemResponseDTO>();
+                for (BaiVietDinhKemDTO dinhKemDTO : baiVietDinhKemList) {
+                    try {
+                        // Lấy file dưới dạng Base64 string
+                        String base64FileData = fileService.getFile("DinhKem", dinhKemDTO.getLinkDK());
+
+                        // Tạo đối tượng response
+                        BaiVietDinhKemResponseDTO baiVietDinhKemResponseDTO = new BaiVietDinhKemResponseDTO();
+
+                        // Gán dữ liệu từ dinhKemDTO vào baiVietDinhKemResponseDTO
+                        baiVietDinhKemResponseDTO.setFromBaiVietDinhKemDTO(dinhKemDTO);
+
+                        // Gán dữ liệu Base64 vào fileData
+                        baiVietDinhKemResponseDTO.setFileData(base64FileData);
+
+                        // Thêm đối tượng vào danh sách response
+                        baiVietDinhKemResponseList.add(baiVietDinhKemResponseDTO);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+                baiVietResponseDTO.setBaiVietDinhKemResponseList(baiVietDinhKemResponseList);
+
+                // Xử lý bình luận
+                List<BinhLuanResponseDTO> binhLuanResponseList = new ArrayList<BinhLuanResponseDTO>();
+                for (BinhLuanDTO binhLuanDTO : binhLuanList) {
+                    TaiKhoanDTO taiKhoanDTO_BinhLuan = taiKhoanService.getTaiKhoanById(binhLuanDTO.getMaTK());
+                    BinhLuanResponseDTO binhLuanResponseDTO = new BinhLuanResponseDTO();
+                    binhLuanResponseDTO.setFromBinhLuanDTO(binhLuanDTO);
+                    binhLuanResponseDTO.setTaiKhoanBVAndBL(new TaiKhoanBVAndBLDTO(taiKhoanDTO_BinhLuan));
+                    binhLuanResponseList.add(binhLuanResponseDTO);
+                }
+                baiVietResponseDTO.setBinhLuanList(binhLuanResponseList);
+
+                baiVietResponseList.add(baiVietResponseDTO);
+            }
+        }
+
+        return ResponseEntity.ok(baiVietResponseList);
+    }
 
     @GetMapping("/{maTK}")
     public ResponseEntity<?> getPostByMaTK(@PathVariable int maTK) {

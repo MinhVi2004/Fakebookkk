@@ -6,7 +6,7 @@ import PostForm from "./PostForm";
 import "../CSS/Post.css";
 import { toast } from "react-toastify";
 
-const Post = ({ post, onDelete, onUpdate }) => {
+const Post = ({ post, onDelete}) => {
   const [likes, setLikes] = useState(post.luotThichList?.length || 0);
   const [hasLiked, setHasLiked] = useState(() => {
     const user = JSON.parse(sessionStorage.getItem("userSignin"));
@@ -14,7 +14,6 @@ const Post = ({ post, onDelete, onUpdate }) => {
   });
   const [comments, setComments] = useState(post.binhLuanList || []);
   const [showComments, setShowComments] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [showFullCaption, setShowFullCaption] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -37,7 +36,9 @@ const totalMedia = images.length + videos.length;
 
 
   const user = JSON.parse(sessionStorage.getItem("userSignin"));
-
+  if (post.trangThai !== "Bình Thường") {
+      return null; // Don't render the post if its status is not "normal"
+    }
   const toggleLike = async () => {
     if (!user) {
       toast.info("Bạn cần đăng nhập để thích bài viết");
@@ -72,17 +73,7 @@ const totalMedia = images.length + videos.length;
 
   return (
     <div className="post-card">
-      {isEditing ? (
-        <PostForm
-          maTK={user?.maTK}
-          postToEdit={post}
-          onPostSubmit={(updatedPost) => {
-            onUpdate(updatedPost);
-            setIsEditing(false);
-          }}
-          onEditDone={() => setIsEditing(false)}
-        />
-      ) : (
+      
         <>
           <div className="post-header">
             <Link
@@ -125,14 +116,6 @@ const totalMedia = images.length + videos.length;
               </button>
               {showMenu && (
                 <div className="menu-dropdown">
-                  <button
-                    onClick={() => {
-                      setIsEditing(true);
-                      setShowMenu(false);
-                    }}
-                  >
-                    ✏️ Sửa
-                  </button>
                   <button
                     onClick={() => {
                       onDelete(post.maBV);
@@ -251,7 +234,6 @@ const totalMedia = images.length + videos.length;
             </div>
           )}
         </>
-      )}
     </div>
   );
 };
