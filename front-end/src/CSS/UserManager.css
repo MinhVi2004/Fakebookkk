@@ -1,0 +1,92 @@
+.user-list-container {
+     padding: 20px;
+     background-color: white;
+     border-radius: 10px;
+}
+
+.user-list {
+     list-style: none;
+     padding: 0;
+}
+
+.user-item {
+     display: flex;
+     align-items: center;
+     gap: 15px;
+     background-color: #f8f9fa;
+     padding: 12px;
+     margin-bottom: 10px;
+     border-radius: 8px;
+     cursor: pointer;
+     transition: background 0.2s;
+}
+
+.user-item:hover {
+     background-color: #e9ecef;
+}
+
+.user-item img {
+     width: 50px;
+     height: 50px;
+     border-radius: 50%;
+     object-fit: cover;
+}
+
+/* Modal styles */
+.modal-overlay {
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     background-color: rgba(0, 0, 0, 0.4);
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     z-index: 999;
+}
+
+.modal-container {
+     background: white;
+     padding: 25px;
+     border-radius: 12px;
+     width: 300px;
+     position: relative;
+     box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+     text-align: center;
+}
+
+.modal-close {
+     position: absolute;
+     top: 10px;
+     right: 14px;
+     background: none;
+     border: none;
+     font-size: 22px;
+     cursor: pointer;
+}
+
+.modal-avatar {
+     width: 100px;
+     height: 100px;
+     border-radius: 50%;
+     object-fit: cover;
+     margin-bottom: 15px;
+}
+.modal-info {
+     text-align: left;
+}
+
+.status-button {
+     margin-top: 16px;
+     padding: 8px 16px;
+     background-color: #007bff;
+     color: white;
+     border: none;
+     border-radius: 4px;
+     cursor: pointer;
+}
+
+.status-button:hover {
+     background-color: #0056b3;
+}
