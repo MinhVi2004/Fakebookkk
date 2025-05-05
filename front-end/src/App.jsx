@@ -9,7 +9,7 @@ import TopBar from "./Page/TopBar";
 import Admin from "./Page/Admin";
 import UserManager from "./Page/UserManager";
 import PostManager from "./Page/PostManager";
-import Home from "./Page/Home";
+import HomePage from "./Page/HomePage";
 
 const AppContent = () => {
      const location = useLocation();
