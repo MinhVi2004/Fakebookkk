@@ -16,14 +16,15 @@ public class BanBeEntity {
     private int maBB;
 
     @Column(name = "MaTK_1")
-    private int maTK1; // Đổi từ maTK_1 thành maTK1
+    private int maTK1;
 
     @Column(name = "MaTK_2")
-    private int maTK2; // Đổi từ maTK_2 thành maTK2
+    private int maTK2;
 
     @Column(name = "TrangThaiBB")
     private String trangThaiBB;
 
     @Column(name = "NgayTao")
     private String ngayTao;
+
 }
