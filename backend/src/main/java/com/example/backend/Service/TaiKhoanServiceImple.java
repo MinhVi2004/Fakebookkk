@@ -36,6 +36,10 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           if (taiKhoanRepository.existsBySoDienThoai(taiKhoanDTO.getSoDienThoai())) {
                throw new RuntimeException("Số điện thoại đã được sử dụng");
           }
+          // Kiểm tra trùng email
+          if (taiKhoanRepository.existsByEmail(taiKhoanDTO.getEmail())) {
+            throw new RuntimeException("Email đã được sử dụng");
+       }
 
           // Gán các giá trị mặc định
           taiKhoanDTO.setProfilePic("default.png");
@@ -51,7 +55,7 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           // Trả lại DTO
           return TaiKhoanMapper.mapToTaiKhoanDTO(savedTaiKhoanEntity);
      }
-
+  
      @Override
      public TaiKhoanDTO updateTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
           Optional<TaiKhoanEntity> optionalTaiKhoan = taiKhoanRepository.findById(taiKhoanDTO.getMaTK());

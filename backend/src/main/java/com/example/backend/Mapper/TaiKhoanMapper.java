@@ -31,7 +31,7 @@ public class TaiKhoanMapper {
             taiKhoanEntity.setCoverPic(taiKhoanDTO.getCoverPic());
         taiKhoanEntity.setHoTen(taiKhoanDTO.getHoTen());
         taiKhoanEntity.setGioiTinh(taiKhoanDTO.getGioiTinh());
-        taiKhoanDTO.setEmail(taiKhoanDTO.getEmail());
+        taiKhoanEntity.setEmail(taiKhoanDTO.getEmail());
         taiKhoanEntity.setSoDienThoai(taiKhoanDTO.getSoDienThoai());
         taiKhoanEntity.setNgaySinh(taiKhoanDTO.getNgaySinh());
         taiKhoanEntity.setNgayTao(taiKhoanDTO.getNgayTao());

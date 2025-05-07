@@ -4,12 +4,13 @@ import com.example.backend.DTO.BaiVietDTO;
 import com.example.backend.DTO.BaiVietDinhKemDTO;
 import com.example.backend.Entity.BaiVietDinhKemEntity;
 import com.example.backend.Entity.BaiVietEntity;
+import com.example.backend.Mapper.BaiVietDinhKemMapper;
 import com.example.backend.Mapper.BaiVietMapper;
 import com.example.backend.Repository.BaiVietDinhKemRepository;
 import com.example.backend.Repository.BaiVietRepository;
 
 import lombok.AllArgsConstructor;
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -159,4 +160,32 @@ public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> 
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
+    @Override
+    @Transactional
+    public boolean deleteBaiViet(int maBV) {
+        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(maBV);
+        if (baiVietEntityOptional.isPresent()) {
+            BaiVietEntity baiVietEntity = baiVietEntityOptional.get();
+    
+            // Đổi trạng thái thành "DaXoa"
+            baiVietEntity.setTrangThai("Đã Xóa");
+            baiVietRepository.save(baiVietEntity);
+    
+            // Nếu muốn xóa file vật lý đính kèm
+            List<BaiVietDinhKemDTO> dinhKemsDTO = baiVietDinhKemService.getAllBaiVietDinhKemByMaBV(maBV);
+            for (BaiVietDinhKemDTO dto : dinhKemsDTO) {
+                String filePath = dto.getLinkDK();
+                File file = new File(filePath);
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+    
+            return true;
+        }
+        return false;
+    }
+    
+
+
 }

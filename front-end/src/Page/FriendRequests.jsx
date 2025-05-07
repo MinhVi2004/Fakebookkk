@@ -6,7 +6,16 @@ function FriendRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true); // Trạng thái tải dữ liệu
   const [error, setError] = useState(false); // Trạng thái lỗi
-
+  const formatDateTime = (isoString) => {
+      const date = new Date(isoString);
+      return date.toLocaleString("vi-VN", {
+        hour: '2-digit',
+        minute: '2-digit',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    };      
   // Hàm lấy danh sách bạn bè
   const fetchFriends = () => {
     const userId = JSON.parse(sessionStorage.getItem("userSignin"))?.maTK;
@@ -105,8 +114,8 @@ function FriendRequests() {
                 className="friend-request-avatar"
               />
               <div className="friend-request-info">
-                <span className="friend-request-name">{request.hoTen}</span>
-                <span className="friend-request-time">{request.ngayTao}</span>
+                <span className="friend-request-name">{request.hoTen}</span><br></br>
+                <span className="friend-request-time">{formatDateTime(request.ngayTao)}</span>
               </div>
               <div className="friend-request-actions">
                 <button

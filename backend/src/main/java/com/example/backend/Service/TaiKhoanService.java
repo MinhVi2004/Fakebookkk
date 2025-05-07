@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface TaiKhoanService {
     TaiKhoanDTO createTaiKhoan(TaiKhoanDTO taiKhoanDTO);
 
+      TaiKhoanDTO getTaiKhoanById(int maTK);
+
     TaiKhoanDTO updateTaiKhoan(TaiKhoanDTO taiKhoanDTO);
 
     TaiKhoanDTO disableTaiKhoan(int maTK);
@@ -19,8 +21,6 @@ public interface TaiKhoanService {
     List<TaiKhoanDTO> getAllTaiKhoan();
 
     List<TaiKhoanDTO> getAllTaiKhoanByTrangThai(String trangThai);
-
-    TaiKhoanDTO getTaiKhoanById(int maTK);
 
     TaiKhoanDTO checkSignin(String tenDangNhap, String matKhau);
 

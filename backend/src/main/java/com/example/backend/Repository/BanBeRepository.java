@@ -32,7 +32,9 @@ import java.util.Optional;
 
 @Repository
 public interface BanBeRepository extends JpaRepository<BanBeEntity, Integer> {
+      List<BanBeEntity> findByTrangThaiBBAndMaTK1(String trangThai, int maTK1);
 
+    List<BanBeEntity> findByTrangThaiBBAndMaTK2(String trangThai, int maTK2);
   // Kiểm tra xem quan hệ bạn bè có tồn tại không
   boolean existsByMaTK1AndMaTK2(Integer maTK1, Integer maTK2);
 

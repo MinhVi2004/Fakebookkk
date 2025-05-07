@@ -76,7 +76,16 @@ public class BanBeController {
     List<Map<String, Object>> friends = banBeService.getFriendList(userId);
     return ResponseEntity.ok(friends);
   }
+  @GetMapping("/pending/sent")
+  public List<BanBeEntity> getPendingSent(@RequestParam int senderId) {
+      return banBeService.getPendingRequestsBySender(senderId);
+  }
 
+  // 2. API: Lấy danh sách yêu cầu nhận được (MaTK_2 là người nhận)
+  @GetMapping("/pending/received")
+  public List<BanBeEntity> getPendingReceived(@RequestParam int receiverId) {
+      return banBeService.getPendingRequestsByReceiver(receiverId);
+  }
   // @PutMapping("/respond-request")
   // public ResponseEntity<?> respondToFriendRequest(
   // @RequestParam Integer senderId,

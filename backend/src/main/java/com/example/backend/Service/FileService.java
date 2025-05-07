@@ -118,5 +118,24 @@ public class FileService {
     
         return result;
     }
-    
+    public void deleteFile(String type, String fileName) throws IOException {
+      // Đường dẫn tới file cần xóa
+      Path filePath = Paths.get(uploadDir, type, fileName).toAbsolutePath();
+  
+      // Kiểm tra xem file có tồn tại không
+      if (Files.exists(filePath)) {
+          try {
+              // Xóa file
+              Files.delete(filePath);
+              System.out.println("Đã xóa file tại: " + filePath);
+          } catch (IOException e) {
+              // Xử lý lỗi khi không thể xóa file
+              e.printStackTrace();
+              throw new RuntimeException("Lỗi khi xóa file: " + e.getMessage(), e);
+          }
+      } else {
+          System.out.println("File không tồn tại tại: " + filePath);
+      }
+  }
+  
 }

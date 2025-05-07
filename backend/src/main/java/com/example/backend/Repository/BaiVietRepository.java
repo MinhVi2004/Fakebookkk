@@ -13,4 +13,5 @@ public interface BaiVietRepository extends JpaRepository<BaiVietEntity, Integer>
     List<BaiVietEntity> findByMaTKAndTrangThai(int maTK, String trangThai);
     List<BaiVietEntity> findByTrangThai(String trangThai);
     TaiKhoanDTO findUserByMaBV(int maBV);
+    void deleteByMaBV(int maBV);
 }

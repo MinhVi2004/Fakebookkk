@@ -18,4 +18,5 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoanEntity, Intege
 
      boolean existsBySoDienThoai(String soDienThoai);
 
+     boolean existsByEmail(String email);
 }
