@@ -108,7 +108,13 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
                     .map(TaiKhoanMapper::mapToTaiKhoanDTO)
                     .collect(Collectors.toList());
      }
-
+     @Override
+     public List<TaiKhoanDTO> getAllTaiKhoanByHoTen(String hoTen) {
+          List<TaiKhoanEntity> entities = taiKhoanRepository.findByHoTenContaining(hoTen);
+          return entities.stream()
+                    .map(TaiKhoanMapper::mapToTaiKhoanDTO)
+                    .collect(Collectors.toList());
+     }
      @Override
      public List<TaiKhoanDTO> getAllTaiKhoanByTrangThai(String trangThai) {
           List<TaiKhoanEntity> entities = taiKhoanRepository.findByTrangThai(trangThai);

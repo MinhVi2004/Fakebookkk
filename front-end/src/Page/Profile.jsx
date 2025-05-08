@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import EditProfileForm from "./EditProfileForm"; // Import form chỉnh sửa
 import "../CSS/Profile.css";
-import { useNavigation } from "../Other/Navigation"; // Import useNavigation từ file navigation.js
+import { useNavigation } from "../Other/navigation"; // Import useNavigation từ file navigation.js
 import Post from "../Other/Post";
 import PostForm from "../Other/PostForm";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
+
 
 export default function Profile() {
   const { goToSignin } = useNavigation();
@@ -18,7 +20,10 @@ export default function Profile() {
   const [isFriendRequestPending, setIsFriendRequestPending] = useState(false); // To track if there’s a pending friend request
   const [requestId, setRequestId] = useState(null); // dùng để chấp nhận kết bạn
   const [friendCount, setFriendCount] = useState(0);
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const userIdFromUrl = queryParams.get("id");
+  
   const [userName, setUserName] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [coverPic, setCoverPic] = useState("");
@@ -43,51 +48,45 @@ export default function Profile() {
     hideEditForm();
   };
 
-  const fetchUserData = async () => {
-    const params = new URLSearchParams(window.location.search);
-    let id = params.get("id");
-
-    // If no id in URL, get from sessionStorage
-    if (!id) {
-      const userSignin = sessionStorage.getItem("userSignin");
-      if (userSignin) {
+  const fetchUserData = async (id) => {
+      if (!id) {
+        const userSignin = sessionStorage.getItem("userSignin");
+        if (userSignin) {
+          try {
+            const user = JSON.parse(userSignin);
+            id = user.maTK;
+          } catch (error) {
+            console.error("Cannot parse userSignin from sessionStorage:", error);
+            return;
+          }
+        }
+      }
+    
+      if (id) {
         try {
-          const user = JSON.parse(userSignin);
-          id = user.maTK;
-        } catch (error) {
-          console.error("Cannot parse userSignin from sessionStorage:", error);
-          return;
+          const res = await axios.get(`http://localhost:8080/api/fakebook/user/${id}`);
+          const userData = res.data.data;
+    
+          if (userData.maTK === storedUserData.maTK) {
+            setIsMyProfile(true);
+          } else {
+            setIsMyProfile(false);
+          }
+    
+          setUserName(userData.hoTen);
+          setProfilePic(userData.profilePic ? `/Resource/Avatar/${userData.profilePic}` : "/Resource/Avatar/default.png");
+          setCoverPic(userData.coverPic ? `/Resource/Background/${userData.coverPic}` : "/Resource/Avatar/default.png");
+          setMaTK(id);
+    
+          fetchPosts(id);
+          checkFriendshipStatus(id);
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          toast.error("Không thể lấy thông tin người dùng.");
         }
       }
-    }
-
-    if (id) {
-      try {
-        // Fetch the profile data of the user from the backend
-        const res = await axios.get(`http://localhost:8080/api/fakebook/user/${id}`);
-        const userData = res.data.data;
-        if(userData.maTK === storedUserData.maTK) {
-          setIsMyProfile(true); // Set to true if the profile belongs to the logged-in user
-        }
-        console.log("User data:", userData);
-
-        setUserName(userData.hoTen);
-        setProfilePic(userData.profilePic ? `/Resource/Avatar/${userData.profilePic}` : "/Resource/Avatar/default.png");
-        setCoverPic(userData.coverPic ? `/Resource/Background/${userData.coverPic}` : "/Resource/Avatar/default.png");
-
-        setMaTK(id); // Set the user ID in the state for future use
-
-        // Fetch posts for this user
-        fetchPosts(id);
-
-        // Check friendship status
-        checkFriendshipStatus(id);
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        toast.error("Không thể lấy thông tin người dùng.");
-      }
-    }
-  };
+    };
+    
 
   const fetchPosts = async (userId) => {
     try {
@@ -108,8 +107,9 @@ export default function Profile() {
         setFriendCount(Array.isArray(friendsList) ? friendsList.length : 0);
         
             // Kiểm tra nếu người đăng nhập đã là bạn của profile
-            const isAlreadyFriend = friendsList.some(friend => friend.maTK === parseInt(currentUserId));
+            const isAlreadyFriend = friendsList.some(friend => friend.friendId === parseInt(profileId));
             setIsFriend(isAlreadyFriend);
+
     
         // 2. Đã gửi lời mời (người dùng hiện tại là sender)
         const resSent = await axios.get("http://localhost:8080/api/friends/pending/sent", {
@@ -135,10 +135,10 @@ export default function Profile() {
     };
     
 
-  useEffect(() => {
-    fetchUserData();
-  }, []); // Empty dependency array to run this only once after component mount
-
+    useEffect(() => {
+      fetchUserData(userIdFromUrl);
+    }, [userIdFromUrl]);
+    
   const handleSendRequest = async () => {
       try {
         await axios.post("http://localhost:8080/api/friends/send-request", null, {

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "./../CSS/FriendRequests.css"; // Thêm CSS cho giao diện
+import { useNavigation } from "../Other/navigation"; // Import useNavigation
 
 function FriendRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true); // Trạng thái tải dữ liệu
   const [error, setError] = useState(false); // Trạng thái lỗi
+  const { goToProfileById } = useNavigation(); // Import hàm điều hướng từ navigation.js
   const formatDateTime = (isoString) => {
       const date = new Date(isoString);
       return date.toLocaleString("vi-VN", {
@@ -112,9 +114,13 @@ function FriendRequests() {
                 src={`/Resource/Avatar/${request.profilePic}`}
                 alt={request.hoTen}
                 className="friend-request-avatar"
+                onClick={() => goToProfileById(request.maBB)}
+                    style={{ cursor: "pointer" }}
               />
               <div className="friend-request-info">
-                <span className="friend-request-name">{request.hoTen}</span><br></br>
+                <span className="friend-request-name"
+                onClick={() => goToProfileById(request.maBB)}
+                    style={{ cursor: "pointer" }}>{request.hoTen}</span><br></br>
                 <span className="friend-request-time">{formatDateTime(request.ngayTao)}</span>
               </div>
               <div className="friend-request-actions">

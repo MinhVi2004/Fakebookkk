@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigation } from "../Other/Navigation"; // Import useNavigation
-import "./../CSS/FriendSuggestions.css"; // Add styles for the component
+import { useNavigation } from "../Other/navigation"; // Import useNavigation
+import "./../CSS/FriendSuggestions.css" // Add styles for the component
 
 function FriendSuggestions() {
   const [suggestedFriends, setSuggestedFriends] = useState([]);
-  const { goToSignin } = useNavigation();
+  const { goToSignin, goToProfileById } = useNavigation();
 
   useEffect(() => {
     const userSignin = sessionStorage.getItem("userSignin");
@@ -87,8 +87,12 @@ function FriendSuggestions() {
                   }
                   alt="Avatar"
                   className="friend-avatar"
+                onClick={() => goToProfileById(friend.id)} 
+                style={{ cursor: "pointer" }}
                 />
-                <span className="friend-name">{friend.name}</span>
+                <span className="friend-name"
+                onClick={() => goToProfileById(friend.id)} 
+                style={{ cursor: "pointer" }}>{friend.name}</span>
               </div>
               <button
                 className="add-friend-button"
