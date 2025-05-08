@@ -59,32 +59,21 @@ public class BanBeController {
     }
   }
 
-  // @GetMapping("/list")
-  // public ResponseEntity<List<BanBeDTO>> getFriendList(@RequestParam Integer
-  // userId) {
-  // return ResponseEntity.ok(banBeService.getFriendList(userId));
-  // }
-
-  // @GetMapping("/list/details")
-  // public ResponseEntity<List<BanBeDTO>> getFriendListWithDetails(@RequestParam
-  // Integer userId) {
-  // List<BanBeDTO> friends = banBeService.getFriendListWithDetails(userId);
-  // return ResponseEntity.ok(friends);
-  // }
   @GetMapping("/list/details")
   public ResponseEntity<List<Map<String, Object>>> getFriendList(@RequestParam Integer userId) {
     List<Map<String, Object>> friends = banBeService.getFriendList(userId);
     return ResponseEntity.ok(friends);
   }
+
   @GetMapping("/pending/sent")
   public List<BanBeEntity> getPendingSent(@RequestParam int senderId) {
-      return banBeService.getPendingRequestsBySender(senderId);
+    return banBeService.getPendingRequestsBySender(senderId);
   }
 
   // 2. API: Lấy danh sách yêu cầu nhận được (MaTK_2 là người nhận)
   @GetMapping("/pending/received")
   public List<BanBeEntity> getPendingReceived(@RequestParam int receiverId) {
-      return banBeService.getPendingRequestsByReceiver(receiverId);
+    return banBeService.getPendingRequestsByReceiver(receiverId);
   }
   // @PutMapping("/respond-request")
   // public ResponseEntity<?> respondToFriendRequest(

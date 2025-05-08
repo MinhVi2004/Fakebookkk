@@ -9,10 +9,6 @@ import java.util.Map;
 public interface BanBeService {
   void sendFriendRequest(Integer senderId, Integer receiverId);
 
-  // void respondToFriendRequest(Integer senderId, Integer receiverId, String
-  // response);
-
-  // List<BanBeDTO> getFriendList(Integer userId);
   List<Map<String, Object>> getFriendList(Integer userId);
 
   void cancelFriendRequest(Integer senderId, Integer receiverId);
@@ -26,7 +22,9 @@ public interface BanBeService {
   void acceptFriendRequest(Integer requestId);
 
   void rejectFriendRequest(Integer requestId);
+
   List<BanBeEntity> getPendingRequestsBySender(int maTK1);
+
   List<BanBeEntity> getPendingRequestsByReceiver(int maTK2);
 
 }
