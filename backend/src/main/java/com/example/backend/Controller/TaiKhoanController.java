@@ -1,6 +1,7 @@
 package com.example.backend.Controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +126,14 @@ public ResponseEntity<?> getTaiKhoanById(@PathVariable Integer maTK) {
                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
           }
      }
+     @GetMapping("/searchUser")
+      public ResponseEntity<?> searchUser(@RequestParam String keyWord) {
+            List<TaiKhoanDTO> list = taiKhoanService.getAllTaiKhoanByHoTen(keyWord);
+            return ResponseEntity.ok(list);
+      }
 
+
+     
      @PutMapping("/update-profile/{maTK}")
      public ResponseEntity<?> updateProfile(
                @PathVariable Integer maTK,

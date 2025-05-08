@@ -7,7 +7,6 @@ import "../CSS/HomePage.css";
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [maTK, setMaTK] = useState("");
-
   // Lấy maTK từ sessionStorage
   useEffect(() => {
     const userData = sessionStorage.getItem("userSignin");

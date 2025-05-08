@@ -77,13 +77,13 @@
 // export default AllFriends;
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useNavigation } from "../Other/Navigation"; // Import useNavigation
+import { useNavigation } from "../Other/navigation"; // Import useNavigation
 import "./../CSS/AllFriends.css"; // Add styles for the component
 
 function AllFriends() {
   const [friends, setFriends] = useState([]);
   const [activeFriendId, setActiveFriendId] = useState(null); // ID của bạn bè đang mở menu
-  const { goToSignin } = useNavigation();
+  const { goToSignin, goToProfileById } = useNavigation();
 
   useEffect(() => {
     const userSignin = sessionStorage.getItem("userSignin");
@@ -157,8 +157,12 @@ function AllFriends() {
                     }
                     alt="Avatar"
                     className="friend-avatar"
+                    onClick={() => goToProfileById(friend.friendId)}
+                    style={{ cursor: "pointer" }}
                   />
-                  <span className="friend-name">{friend.hoTen}</span>
+                  <span className="friend-name"
+                  onClick={() => goToProfileById(friend.friendId)} 
+                    style={{ cursor: "pointer" }}>{friend.hoTen}</span>
                 </div>
                 <div className="friend-actions">
                   <button

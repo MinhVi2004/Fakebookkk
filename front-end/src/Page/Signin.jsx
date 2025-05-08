@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
 import "./../CSS/Signin.css";
-import { useNavigation } from "../Other/Navigation"; // Import useNavigation từ file navigation.js
+import { useNavigation } from "../Other/navigation"; // Import useNavigation từ file navigation.js
 function Signin() {
      sessionStorage.removeItem("userSignin"); // Xóa thông tin người dùng trong sessionStorage khi vào trang đăng nhập
      const { goToSignup, goToProfile, goToHomePage } = useNavigation();

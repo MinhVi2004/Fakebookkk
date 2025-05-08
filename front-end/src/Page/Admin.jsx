@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { useNavigation } from "../Other/Navigation"; // Import useNavigation từ file navigation.js
+import { useNavigation } from "../Other/navigation"; // Import useNavigation từ file navigation.js
 import UserList from "./UserManager";
 import "./../CSS/Admin.css";
 import { Outlet } from "react-router-dom"; // Chỗ này để render các route con

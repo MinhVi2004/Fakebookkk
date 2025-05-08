@@ -23,12 +23,12 @@ public class BanBeServiceImple implements BanBeService {
 
   @Override
   public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
-    return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Đồng Ý", maTK1);
+    return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Chấp Nhận", maTK1);
   }
 
   @Override
   public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
-    return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Đồng Ý", maTK2);
+    return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", maTK2);
   }
 
   // Gửi yêu cầu kết bạn

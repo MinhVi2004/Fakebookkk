@@ -6,7 +6,9 @@ import PostForm from "./PostForm";
 import "../CSS/Post.css";
 import { toast } from "react-toastify";
 import confirm from "../Other/Confirm";
+import { useNavigation } from "./navigation" // Import useNavigation từ file navigation.js
 const Post = ({ post, onDelete }) => {
+      const { goToProfileById } = useNavigation();
   const [likes, setLikes] = useState(post.luotThichList?.length || 0);
   const [hasLiked, setHasLiked] = useState(() => {
     const user = JSON.parse(sessionStorage.getItem("userSignin"));
@@ -106,37 +108,36 @@ const Post = ({ post, onDelete }) => {
   return (
     <div className="post-card">
       <div className="post-header">
-        <Link
-          to={`/profile?id=${post?.taiKhoanBVAndBL?.maTK}`}
+      <div
+        className="post-author"
+        onClick={() => goToProfileById(post?.taiKhoanBVAndBL?.maTK)}
+      >
+        <img
+          src={`Resource/Avatar/${
+            post?.taiKhoanBVAndBL?.profilePic || "default.png"
+          }`}
+          alt=""
+          className="profile-pic"
+        />
+      </div>
+      <div className="d-flex flex-column align-items-start">
+        <span
           className="post-author"
+          onClick={() => goToProfileById(post?.taiKhoanBVAndBL?.maTK)}
         >
-          <img
-            src={`Resource/Avatar/${
-              post?.taiKhoanBVAndBL?.profilePic || "default.png"
-            }`}
-            alt=""
-            className="profile-pic"
-          />
-        </Link>
-        <div className="d-flex flex-column align-items-start">
-          <Link
-            to={`/profile?id=${post?.taiKhoanBVAndBL?.maTK}`}
-            className="post-author"
-          >
-            {post?.taiKhoanBVAndBL?.hoTen}
-          </Link>
-          <span className="post-time">
-            {new Date(post?.thoiGian).toLocaleString("vi-VN", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-            })}
-          </span>
-        </div>
-
+          {post?.taiKhoanBVAndBL?.hoTen}
+        </span>
+        <span className="post-time">
+          {new Date(post?.thoiGian).toLocaleString("vi-VN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })}
+        </span>
+      </div>
         {/* Check if the current user is the author of the post */}
         {user?.maTK === post?.taiKhoanBVAndBL?.maTK && (
           <div className="ms-auto" style={{ position: "relative" }}>

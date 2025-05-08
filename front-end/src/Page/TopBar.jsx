@@ -4,14 +4,19 @@ import "../CSS/TopBar.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 import confirm from "../Other/Confirm";
+import SearchBar from "../Other/SearchBar";
 
 const TopBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const userData = JSON.parse(sessionStorage.getItem("userSignin") || "{}");
   const role = userData.phanQuyen;
+  const profilePic = userData.profilePic
   const username = userData.hoTen;
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const handleClick = () => {
+      navigate('/profile'); // Điều hướng đến trang cá nhân
+    };
   const handleLogout = async () => {
     const confirmed = await confirm({
       title: "Đăng xuất?",
@@ -39,7 +44,7 @@ const TopBar = () => {
       <div className="logo">
         <Link to="/home">Fakebook</Link>
       </div>
-
+      <SearchBar/>
       <div className="nav-links">
         <Link to="/home" className="home-button category-button">
           Trang Chủ
@@ -69,13 +74,13 @@ const TopBar = () => {
           className="user-dropdown"
           onClick={() => setDropdownOpen(!dropdownOpen)}
         >
-          <FontAwesomeIcon icon={faUser} /> {username}
+           <img src={`../Resource/Avatar/${profilePic}`} alt="" className="topbar-avatar"/>{username}
           {dropdownOpen && (
             <div className="dropdown-menu">
-              <button>
-                <Link to="/profile">Trang cá nhân</Link>
-              </button>
-              <button onClick={handleLogout}>Đăng xuất</button>
+                  <button className="profile-button" onClick={handleClick}>
+                        Trang cá nhân
+                  </button>
+                  <button onClick={handleLogout}>Đăng xuất</button>
             </div>
           )}
         </span>

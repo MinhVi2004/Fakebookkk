@@ -20,6 +20,8 @@ public interface TaiKhoanService {
 
     List<TaiKhoanDTO> getAllTaiKhoan();
 
+    List<TaiKhoanDTO> getAllTaiKhoanByHoTen(String hoTen);
+
     List<TaiKhoanDTO> getAllTaiKhoanByTrangThai(String trangThai);
 
     TaiKhoanDTO checkSignin(String tenDangNhap, String matKhau);
