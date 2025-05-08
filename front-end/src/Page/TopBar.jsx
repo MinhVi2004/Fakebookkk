@@ -44,12 +44,26 @@ const TopBar = () => {
         <Link to="/home" className="home-button category-button">
           Trang Chủ
         </Link>
+       <Link to={"/friends/all"} className=" category-button">
+            Tất cả bạn bè
+          </Link>
+          <Link
+            to={"/friends/suggested"}
+            className=" category-button"
+          >
+            Gợi ý kết bạn
+          </Link>
+          <Link
+            to={"/friends/requests"}
+            className=" category-button"
+          >
+            Lời mời kết bạn
+          </Link>
         {role === "Quản Trị Viên" && (
           <Link to="/admin" className="admin-button category-button">
             Quản lý
           </Link>
         )}
-
         <span
           ref={dropdownRef}
           className="user-dropdown"

@@ -13,6 +13,7 @@ function Signup() {
      const [ngaySinh, setNgaySinh] = useState(null);
      const [gioiTinh, setGioiTinh] = useState(""); // Khai báo state cho password
      const [soDienThoai, setSoDienThoai] = useState(""); // Khai báo state cho password
+     const [email, setEmail] = useState(""); // Khai báo state cho password
      const [tenDangNhap, setTenDangNhap] = useState(""); // Khai báo state cho username
      const [matKhau, setMatKhau] = useState(""); // Khai báo state cho password
      const [xacNhanMatKhau, setXacNhanMatKhau] = useState(""); // Khai báo state cho password
@@ -24,6 +25,7 @@ function Signup() {
                ngaySinh,
                gioiTinh,
                soDienThoai,
+               email,
                tenDangNhap,
                matKhau,
                xacNhanMatKhau
@@ -45,12 +47,13 @@ function Signup() {
                          "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                         tenDangNhap: tenDangNhap,
-                         matKhau: matKhau,
-                         hoTen: hoTen,
-                         gioiTinh: gioiTinh,
-                         soDienThoai: soDienThoai,
-                         ngaySinh: formattedDateWithAddedDay,
+                        tenDangNhap: tenDangNhap,
+                        matKhau: matKhau,
+                        hoTen: hoTen,
+                        gioiTinh: gioiTinh,
+                        soDienThoai: soDienThoai,
+                        email: email,
+                        ngaySinh: formattedDateWithAddedDay,
                     }), // Gửi dữ liệu đăng nhập dưới dạng JSON
                }
           );
@@ -137,6 +140,15 @@ function Signup() {
                                    }
                               />
                          </div>
+                         <div>
+                              <input
+                              type="email"
+                              name="email"
+                              placeholder="Nhập email"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              />
+                        </div>
                          <div>
                               <input
                                    type="text"

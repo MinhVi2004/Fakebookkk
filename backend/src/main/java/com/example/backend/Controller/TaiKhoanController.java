@@ -21,6 +21,7 @@ import com.example.backend.Service.TaiKhoanService;
 import lombok.AllArgsConstructor;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -88,6 +89,29 @@ public class TaiKhoanController {
                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
           }
      }
+     @GetMapping("/user/{maTK}")
+public ResponseEntity<?> getTaiKhoanById(@PathVariable Integer maTK) {
+    try {
+        TaiKhoanDTO taiKhoanDTO = taiKhoanService.getTaiKhoanById(maTK);
+        if (taiKhoanDTO != null) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Lấy thông tin thành công");
+            response.put("data", taiKhoanDTO);
+            return ResponseEntity.ok(response);
+        } else {
+            Map<String, Object> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", "Không tìm thấy người dùng với ID: " + maTK);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    } catch (RuntimeException ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("status", "error");
+        error.put("message", "Lỗi khi lấy thông tin người dùng: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+}
 
      @PutMapping("/update")
      public ResponseEntity<?> updateTaiKhoan(@RequestBody TaiKhoanDTO taiKhoanDTO) {

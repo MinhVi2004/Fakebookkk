@@ -64,21 +64,7 @@ function Admin() {
           <Link to={"/admin/posts"} className="admin-leftbar-nav-item">
             Bài Viết
           </Link>
-          <Link to={"/admin/friends/all"} className="admin-leftbar-nav-item">
-            Tất cả bạn bè
-          </Link>
-          <Link
-            to={"/admin/friends/suggested"}
-            className="admin-leftbar-nav-item"
-          >
-            Gợi ý kết bạn
-          </Link>
-          <Link
-            to={"/admin/friends/requests"}
-            className="admin-leftbar-nav-item"
-          >
-            Lời mời kết bạn
-          </Link>
+          
         </ul>
       </div>
       <div id="admin-content">

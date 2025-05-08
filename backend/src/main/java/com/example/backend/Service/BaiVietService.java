@@ -18,4 +18,5 @@ public interface BaiVietService {
       List<BaiVietDTO> getBaiVietByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe);
       List<BaiVietDTO> getBaiVietByMaTKAndTrangThai(int maTK, String trangThai);
       List<BaiVietDTO> getBaiVietByTrangThai(String trangThai);
+      boolean deleteBaiViet(int maBV);
 }

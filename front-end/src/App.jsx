@@ -31,19 +31,19 @@ const AppContent = () => {
     <>
       {!hideTopBar && <TopBar />}
       <Routes>
-        <Route path="/" element={<Signin />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/signin" element={<Signin />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/admin" element={<Admin />}>
-          <Route path="" element={<UserManager />} />
-          <Route path="users" element={<UserManager />} />
-          <Route path="posts" element={<PostManager />} />
-          <Route path="friends/all" element={<AllFriends />} />
-          <Route path="friends/suggested" element={<FriendSuggestions />} />
-          <Route path="friends/requests" element={<FriendRequests />} />{" "}
-        </Route>
+            <Route path="/" element={<Signin />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="friends/all" element={<AllFriends />} />
+            <Route path="friends/suggested" element={<FriendSuggestions />} />
+            <Route path="friends/requests" element={<FriendRequests />} />
+            <Route path="/admin" element={<Admin />}>
+                  <Route path="" element={<UserManager />} />
+                  <Route path="users" element={<UserManager />} />
+                  <Route path="posts" element={<PostManager />} />
+            </Route>
       </Routes>
     </>
   );

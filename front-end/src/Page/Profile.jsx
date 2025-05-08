@@ -3,54 +3,35 @@ import { toast } from "react-toastify";
 import EditProfileForm from "./EditProfileForm"; // Import form chỉnh sửa
 import "../CSS/Profile.css";
 import { useNavigation } from "../Other/Navigation"; // Import useNavigation từ file navigation.js
+import Post from "../Other/Post";
+import PostForm from "../Other/PostForm";
+import axios from "axios";
 
 export default function Profile() {
   const { goToSignin } = useNavigation();
   const storedUserData = JSON.parse(sessionStorage.getItem("userSignin"));
+  const [postsUser, setPostsUser] = useState([]);
+  const [maTK, setMaTK] = useState([]);
+  const [isMyProfile, setIsMyProfile] = useState(false); // To check if the profile is the user's own
+  const [isFriend, setIsFriend] = useState(false); // To track friendship status
+  const [friendRequestSent, setFriendRequestSent] = useState(false); // To track if request was sent
+  const [isFriendRequestPending, setIsFriendRequestPending] = useState(false); // To track if there’s a pending friend request
+  const [requestId, setRequestId] = useState(null); // dùng để chấp nhận kết bạn
+  const [friendCount, setFriendCount] = useState(0);
 
-  // Check if user is not signed in, and navigate using useEffect
-  useEffect(() => {
-    if (!storedUserData) {
-      toast.error("Bạn chưa đăng nhập, vui lòng đăng nhập để tiếp tục");
-      goToSignin(); // Chuyển hướng đến trang đăng nhập nếu không có thông tin người dùng
-    }
-  }, [storedUserData, goToSignin]);
-
-  // Trạng thái cho thông tin người dùng
-  const [userName, setUserName] = useState(storedUserData?.hoTen || "");
-  const [profilePic, setProfilePic] = useState(
-    storedUserData?.profilePic
-      ? `/Resource/Avatar/${storedUserData.profilePic}`
-      : ""
-  );
-  const [coverPic, setCoverPic] = useState(
-    storedUserData?.coverPic
-      ? `/Resource/Background/${storedUserData.coverPic}`
-      : ""
-  );
-
+  const [userName, setUserName] = useState("");
+  const [profilePic, setProfilePic] = useState("");
+  const [coverPic, setCoverPic] = useState("");
   const [isEditFormOpen, setIsEditFormOpen] = useState(false);
 
-  // Xử lý mở/đóng form chỉnh sửa
   const showEditForm = () => setIsEditFormOpen(true);
   const hideEditForm = () => setIsEditFormOpen(false);
 
-  // Xử lý cập nhật thông tin từ form
   const updateProfile = (updatedData) => {
-    // Cập nhật tên người dùng
     if (updatedData.hoTen) setUserName(updatedData.hoTen);
+    if (updatedData.profilePic) setProfilePic(`/Resource/Avatar/${updatedData.profilePic}`);
+    if (updatedData.coverPic) setCoverPic(`/Resource/Background/${updatedData.coverPic}`);
 
-    // Cập nhật ảnh đại diện
-    if (updatedData.profilePic) {
-      setProfilePic(`/Resource/Avatar/${updatedData.profilePic}`);
-    }
-
-    // Cập nhật ảnh bìa
-    if (updatedData.coverPic) {
-      setCoverPic(`/Resource/Background/${updatedData.coverPic}`);
-    }
-
-    // Cập nhật lại sessionStorage
     const updatedUserData = {
       ...storedUserData,
       hoTen: updatedData.hoTen,
@@ -59,91 +40,198 @@ export default function Profile() {
     };
     sessionStorage.setItem("userSignin", JSON.stringify(updatedUserData));
 
-    // Đóng form sau khi lưu
     hideEditForm();
   };
 
-  if (!storedUserData) {
-    // Return null to avoid rendering the profile if not signed in
-    return null;
-  }
+  const fetchUserData = async () => {
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get("id");
+
+    // If no id in URL, get from sessionStorage
+    if (!id) {
+      const userSignin = sessionStorage.getItem("userSignin");
+      if (userSignin) {
+        try {
+          const user = JSON.parse(userSignin);
+          id = user.maTK;
+        } catch (error) {
+          console.error("Cannot parse userSignin from sessionStorage:", error);
+          return;
+        }
+      }
+    }
+
+    if (id) {
+      try {
+        // Fetch the profile data of the user from the backend
+        const res = await axios.get(`http://localhost:8080/api/fakebook/user/${id}`);
+        const userData = res.data.data;
+        if(userData.maTK === storedUserData.maTK) {
+          setIsMyProfile(true); // Set to true if the profile belongs to the logged-in user
+        }
+        console.log("User data:", userData);
+
+        setUserName(userData.hoTen);
+        setProfilePic(userData.profilePic ? `/Resource/Avatar/${userData.profilePic}` : "/Resource/Avatar/default.png");
+        setCoverPic(userData.coverPic ? `/Resource/Background/${userData.coverPic}` : "/Resource/Avatar/default.png");
+
+        setMaTK(id); // Set the user ID in the state for future use
+
+        // Fetch posts for this user
+        fetchPosts(id);
+
+        // Check friendship status
+        checkFriendshipStatus(id);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        toast.error("Không thể lấy thông tin người dùng.");
+      }
+    }
+  };
+
+  const fetchPosts = async (userId) => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/fakebook/posts/${userId}`);
+      setPostsUser(res.data.sort((a, b) => b.maBV - a.maBV)); // Sort posts by ID
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+    }
+  };
+
+  const checkFriendshipStatus = async (profileId) => {
+      try {
+        const currentUserId = storedUserData.maTK;
+    
+        // 1. Danh sách bạn bè
+        const resFriends = await axios.get(`http://localhost:8080/api/friends/list/details?userId=${currentUserId}`);
+        const friendsList = resFriends.data;
+        setFriendCount(Array.isArray(friendsList) ? friendsList.length : 0);
+        
+            // Kiểm tra nếu người đăng nhập đã là bạn của profile
+            const isAlreadyFriend = friendsList.some(friend => friend.maTK === parseInt(currentUserId));
+            setIsFriend(isAlreadyFriend);
+    
+        // 2. Đã gửi lời mời (người dùng hiện tại là sender)
+        const resSent = await axios.get("http://localhost:8080/api/friends/pending/sent", {
+          params: { senderId: currentUserId }
+        });
+        const sentList = resSent.data;
+        const sent = sentList.find(item => item.maTK2 === parseInt(profileId));
+        setFriendRequestSent(!!sent);
+    
+        // 3. Đang chờ duyệt (người dùng hiện tại là receiver)
+        const resReceived = await axios.get("http://localhost:8080/api/friends/pending/received", {
+          params: { receiverId: currentUserId }
+        });
+        const receivedList = resReceived.data;
+        const received = receivedList.find(item => item.maTK1 === parseInt(profileId));
+        setIsFriendRequestPending(!!received);
+    
+        // Gán requestId nếu có để dùng khi accept
+        if (received) setRequestId(received.maBB); // bạn cần thêm useState cho requestId
+      } catch (err) {
+        console.error("Error checking friendship status:", err);
+      }
+    };
+    
+
+  useEffect(() => {
+    fetchUserData();
+  }, []); // Empty dependency array to run this only once after component mount
+
+  const handleSendRequest = async () => {
+      try {
+        await axios.post("http://localhost:8080/api/friends/send-request", null, {
+          params: {
+            senderId: storedUserData.maTK,
+            receiverId: maTK
+          }
+        });
+        setFriendRequestSent(true);
+        toast.success("Yêu cầu kết bạn đã được gửi.");
+      } catch (err) {
+        toast.error("Lỗi khi gửi yêu cầu kết bạn.");
+      }
+    };
+    
+
+    const handleAcceptRequest = async () => {
+      try {
+        if (!requestId) return toast.error("Không tìm thấy yêu cầu kết bạn.");
+    
+        await axios.post(`http://localhost:8080/api/friends/accept/${requestId}`);
+        setIsFriend(true);
+        setIsFriendRequestPending(false);
+        toast.success("Lời mời kết bạn đã được chấp nhận.");
+      } catch (err) {
+        toast.error("Lỗi khi chấp nhận yêu cầu.");
+      }
+    };
+    
+
+  const handleRemoveFriend = async () => {
+    try {
+      await axios.delete("http://localhost:8080/api/friends/remove-friend", {
+        params: {
+          userId1: storedUserData.maTK,
+          userId2: maTK
+        }
+      });
+      setIsFriend(false);
+      toast.success("Đã hủy kết bạn.");
+    } catch (err) {
+      toast.error("Lỗi khi hủy kết bạn.");
+    }
+  };
 
   return (
     <div className="profile-container">
       <div className="max-w-6xl mx-auto">
-        {/* Phần ảnh bìa */}
         <div className="cover-photo">
-          {coverPic ? (
-            <img src={coverPic} alt="Ảnh bìa" />
-          ) : (
-            <div className="default-cover">Chưa có ảnh bìa</div> // Fallback content if no cover photo
-          )}
+          {coverPic ? <img src={coverPic} alt="Ảnh bìa" /> : <div className="default-cover">Chưa có ảnh bìa</div>}
         </div>
-        {/* Phần thông tin cá nhân */}
         <div className="profile-info">
           <div className="profile-avatar">
-            {profilePic ? (
-              <img src={profilePic} alt="Ảnh đại diện" />
-            ) : (
-              <div className="default-avatar">Không có ảnh</div> // Fallback content if no profile pic
-            )}
+            {profilePic ? <img src={profilePic} alt="Ảnh đại diện" /> : <div className="default-avatar">Không có ảnh</div>}
           </div>
           <div className="profile-name">
             <h1>{userName}</h1>
-            <p>1.2K người bạn</p>
+            <p>{friendCount} bạn bè</p>
           </div>
           <div className="profile-buttons">
-            <button onClick={showEditForm}>✏️ Chỉnh sửa trang cá nhân</button>
+          {isMyProfile && (
+                  <button onClick={showEditForm}>✏️ Chỉnh sửa trang cá nhân</button>
+                  )}
+
+            {!isMyProfile && (
+                        <div className="profile-buttons">
+                        {isFriend ? (
+                              <button onClick={handleRemoveFriend}>Hủy kết bạn</button>
+                        ) : isFriendRequestPending ? (
+                              <button onClick={handleAcceptRequest}>Chấp nhận lời mời kết bạn</button>
+                        ) : friendRequestSent ? (
+                              <button disabled>Đã gửi lời mời kết bạn</button>
+                        ) :  (
+                              <button onClick={handleSendRequest}>Kết bạn</button>
+                        )}
+                        </div>
+                        )}
+
           </div>
           {isEditFormOpen && (
             <EditProfileForm
               userName={userName}
-              storedUserData={storedUserData} // Truyền thông tin người dùng vào form
-              onSave={(updatedData) => {
-                updateProfile(updatedData); // Cập nhật thông tin
-              }}
-              onCancel={hideEditForm} // Đóng form khi nhấn "Hủy"
+              storedUserData={storedUserData}
+              onSave={updateProfile}
+              onCancel={hideEditForm}
             />
           )}
         </div>
 
-        {/* Phần bài viết */}
         <div className="post-container">
-          <div className="post-input">
-            <div className="post-input-header">
-              {profilePic ? (
-                <img src={profilePic} alt="Ảnh đại diện" />
-              ) : (
-                <div className="default-avatar">Không có ảnh</div> // Fallback content if no profile pic
-              )}
-              <input type="text" placeholder="Bạn đang nghĩ gì?" />
-            </div>
-            <div className="post-options">
-              <button>📷 Thêm ảnh</button>
-              <button>🎥 Thêm video</button>
-              <button>📍 Địa điểm</button>
-            </div>
-          </div>
-
-          <div className="post-content">
-            <div className="post-header">
-              {profilePic ? (
-                <img src={profilePic} alt="Ảnh đại diện" />
-              ) : (
-                <div className="default-avatar">Không có ảnh</div> // Fallback content if no profile pic
-              )}
-              <div className="post-header-info">
-                <h3>{userName}</h3>
-                <p>2 giờ trước</p>
-              </div>
-            </div>
-            <p>Hihihi</p>
-            <img src="/Images/8.jpg" alt="Ảnh bài viết" className="picture" />
-            <div className="post-actions">
-              <button>Thích </button>
-              <button>Bình luận</button>
-              <button>Chia sẻ</button>
-            </div>
+          {maTK && <PostForm maTK={maTK} onPostSubmit={fetchPosts} />}
+          <div className="posts-list">
+            {postsUser.length > 0 ? postsUser.map((post) => <Post key={post.maBV} post={post} />) : <p>Không có bài viết nào.</p>}
           </div>
         </div>
       </div>

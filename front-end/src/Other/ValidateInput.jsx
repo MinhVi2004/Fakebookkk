@@ -3,6 +3,7 @@ export const validateFormsignup = (
      birthday,
      gender,
      phone,
+     email,
      tenDangNhap,
      password,
      repassword
@@ -37,6 +38,10 @@ export const validateFormsignup = (
      if (!gender) {
           return "Vui lòng chọn giới tính";
      }
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+            return "Email không hợp lệ";
+      }
 
      // Kiểm tra ngày sinh
      if (!birthday) {

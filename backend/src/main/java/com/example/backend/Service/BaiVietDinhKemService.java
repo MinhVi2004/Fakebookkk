@@ -10,5 +10,4 @@ public interface BaiVietDinhKemService {
       BaiVietDinhKemDTO createBaiVietDinhKem(BaiVietDinhKemDTO baiVietDinhKemDTO);
       BaiVietDinhKemDTO updateBaiVietDinhKem(BaiVietDinhKemDTO baiVietDinhKemDTO);
       boolean deleteBaiVietDinhKem(int maBV_DK);
-      
 }

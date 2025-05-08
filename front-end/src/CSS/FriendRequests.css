@@ -13,8 +13,9 @@
   justify-content: space-between;
   margin-bottom: 15px;
   padding: 10px;
-  background-color: #1c1e21;
+  background-color: #f2f4f7;
   border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .friend-request-avatar {
@@ -32,12 +33,12 @@
 .friend-request-name {
   font-size: 16px;
   font-weight: bold;
-  color: #ffffff;
+  color: #000000;
 }
 
 .friend-request-time {
   font-size: 14px;
-  color: #b0b3b8;
+  color: #606162;
 }
 
 .friend-request-actions {

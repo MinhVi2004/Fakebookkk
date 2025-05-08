@@ -99,6 +99,15 @@ public class BanBeServiceImple implements BanBeService {
   // banBeRepository.save(friendRequest);
   // }
   @Override
+  public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
+      return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Đồng Ý", maTK1);
+  }
+
+  @Override
+  public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
+      return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Đồng Ý", maTK2);
+  }
+  @Override
   public void sendFriendRequest(Integer senderId, Integer receiverId) {
     Optional<BanBeEntity> existingRequest = banBeRepository.findByMaTK1AndMaTK2(senderId, receiverId);
     Optional<BanBeEntity> reverseRequest = banBeRepository.findByMaTK1AndMaTK2(receiverId, senderId);
