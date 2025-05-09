@@ -54,7 +54,14 @@ a {
       transform: scale(1.05); /* Slight scale effect for a more dynamic feel */
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
     }
-    
+    .badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 3px 7px;
+  font-size: 12px;
+  margin-left: 6px;
+}
     /* Avatar style */
     .topbar-avatar {
       width: 40px;
