@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-
+import { useRequestContext } from "./RequestContext"; // đảm bảo đã import
 import "./../CSS/Signin.css";
 import { useNavigation } from "../Other/navigation"; // Import useNavigation từ file navigation.js
 function Signin() {
      sessionStorage.removeItem("userSignin"); // Xóa thông tin người dùng trong sessionStorage khi vào trang đăng nhập
+      const { fetchRequestCount } = useRequestContext();
      const { goToSignup, goToProfile, goToHomePage } = useNavigation();
      const [tenDangNhap, setTenDangNhap] = useState(""); // Khai báo state cho username
      const [matKhau, setMatKhau] = useState(""); // Khai báo state cho password
@@ -28,7 +29,7 @@ function Signin() {
                const userData = data.data;
                sessionStorage.setItem('userSignin', JSON.stringify(userData));
                toast.success("Đăng nhập thành công");
-
+                   await fetchRequestCount();
                // Chuyển hướng đến trang profile
                goToHomePage();
           } else {

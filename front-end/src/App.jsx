@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { toast } from "react-toastify";
+import { RequestProvider } from "./Page/RequestContext"; // Import the provider
 import Signin from "./Page/Signin";
 import Signup from "./Page/Signup";
 import Profile from "./Page/Profile";
@@ -31,19 +32,19 @@ const AppContent = () => {
     <>
       {!hideTopBar && <TopBar />}
       <Routes>
-            <Route path="/" element={<Signin />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/signin" element={<Signin />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="friends/all" element={<AllFriends />} />
-            <Route path="friends/suggested" element={<FriendSuggestions />} />
-            <Route path="friends/requests" element={<FriendRequests />} />
-            <Route path="/admin" element={<Admin />}>
-                  <Route path="" element={<UserManager />} />
-                  <Route path="users" element={<UserManager />} />
-                  <Route path="posts" element={<PostManager />} />
-            </Route>
+        <Route path="/" element={<Signin />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="friends/all" element={<AllFriends />} />
+        <Route path="friends/suggested" element={<FriendSuggestions />} />
+        <Route path="friends/requests" element={<FriendRequests />} />
+        <Route path="/admin" element={<Admin />}>
+          <Route path="" element={<UserManager />} />
+          <Route path="users" element={<UserManager />} />
+          <Route path="posts" element={<PostManager />} />
+        </Route>
       </Routes>
     </>
   );
@@ -51,10 +52,12 @@ const AppContent = () => {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-      <ToastContainer position="top-center" autoClose={2000} />
-    </Router>
+    <RequestProvider> {/* Wrap the app content with RequestProvider */}
+      <Router> {/* Wrap your entire app with Router */}
+        <ToastContainer position="top-center" /> {/* Đây là nơi để toast hiện */}
+        <AppContent />
+      </Router>
+    </RequestProvider>
   );
 }
 
