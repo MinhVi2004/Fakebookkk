@@ -26,7 +26,7 @@ public class BanBeController {
   public ResponseEntity<?> sendFriendRequest(@RequestParam Integer senderId, @RequestParam Integer receiverId) {
     try {
       banBeService.sendFriendRequest(senderId, receiverId);
-      return ResponseEntity.ok("Yêu cầu kết bạn đã được gửi.");
+      return ResponseEntity.ok("Yeu cau ket ban duoc gui.");
     } catch (RuntimeException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
@@ -43,7 +43,7 @@ public class BanBeController {
   public ResponseEntity<?> cancelFriendRequest(@RequestParam Integer senderId, @RequestParam Integer receiverId) {
     try {
       banBeService.cancelFriendRequest(senderId, receiverId);
-      return ResponseEntity.ok("Yêu cầu kết bạn đã được hủy.");
+      return ResponseEntity.ok("Yeu cau ket ban da duoc huy.");
     } catch (RuntimeException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
@@ -53,7 +53,7 @@ public class BanBeController {
   public ResponseEntity<?> removeFriend(@RequestParam Integer userId1, @RequestParam Integer userId2) {
     try {
       banBeService.removeFriend(userId1, userId2);
-      return ResponseEntity.ok("Đã hủy kết bạn.");
+      return ResponseEntity.ok("Đa huy ket ban.");
     } catch (RuntimeException e) {
       return ResponseEntity.badRequest().body(e.getMessage());
     }
@@ -75,19 +75,8 @@ public class BanBeController {
   public List<BanBeEntity> getPendingReceived(@RequestParam int receiverId) {
     return banBeService.getPendingRequestsByReceiver(receiverId);
   }
-  // @PutMapping("/respond-request")
-  // public ResponseEntity<?> respondToFriendRequest(
-  // @RequestParam Integer senderId,
-  // @RequestParam Integer receiverId,
-  // @RequestParam String response) {
-  // try {
-  // banBeService.respondToFriendRequest(senderId, receiverId, response);
-  // return ResponseEntity.ok("Phản hồi yêu cầu kết bạn thành công.");
-  // } catch (RuntimeException e) {
-  // return ResponseEntity.badRequest().body(e.getMessage());
-  // }
-  // }
 
+  // 3. API: Gợi ý bạn bè
   @GetMapping("/suggested-friends")
   public ResponseEntity<List<Map<String, Object>>> getSuggestedFriends(@RequestParam Integer userId) {
     // Gọi trực tiếp phương thức từ Service
@@ -96,15 +85,17 @@ public class BanBeController {
 
   }
 
+  // 4. API: Chấp nhận lời mời kết bạn
   @PostMapping("/accept/{requestId}")
   public ResponseEntity<?> acceptFriendRequest(@PathVariable Integer requestId) {
     banBeService.acceptFriendRequest(requestId);
-    return ResponseEntity.ok("Lời mời kết bạn đã được chấp nhận.");
+    return ResponseEntity.ok("Loi moi ket ban da duoc chap nhan.");
   }
 
+  // 5. API: Từ chối lời mời kết bạn
   @PostMapping("/reject/{requestId}")
   public ResponseEntity<?> rejectFriendRequest(@PathVariable Integer requestId) {
     banBeService.rejectFriendRequest(requestId);
-    return ResponseEntity.ok("Lời mời kết bạn đã bị từ chối.");
+    return ResponseEntity.ok("Loi moi ket ban da bi tu choi.");
   }
 }

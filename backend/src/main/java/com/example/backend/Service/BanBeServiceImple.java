@@ -21,11 +21,13 @@ public class BanBeServiceImple implements BanBeService {
 
   private final BanBeRepository banBeRepository;
 
+  // Lấy danh sách bạn bè của người dùng
   @Override
   public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
     return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Chấp Nhận", maTK1);
   }
 
+  // Lấy danh sách yêu cầu kết bạn đang chờ được chấp nhận của người nhận
   @Override
   public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
     return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", maTK2);
@@ -40,10 +42,10 @@ public class BanBeServiceImple implements BanBeService {
     if (existingRequest.isPresent()) {
       BanBeEntity friendRequest = existingRequest.get();
       if (friendRequest.getTrangThaiBB().equals("Chờ Chấp Nhận")) {
-        throw new RuntimeException("Người dùng " + senderId + " đang gửi yêu cầu kết bạn đến bạn.");
+        throw new RuntimeException("Nguoi dung " + senderId + " đang gui yeu cau ket ban den ban.");
       }
       if (friendRequest.getTrangThaiBB().equals("Đã Đồng Ý")) {
-        throw new RuntimeException("Hai người đã là bạn bè.");
+        throw new RuntimeException("Hai nguoi da la ban be.");
       }
       if (friendRequest.getTrangThaiBB().equals("Không Đồng Ý") || friendRequest.getTrangThaiBB().equals("Đã Xóa")) {
         friendRequest.setTrangThaiBB("Chờ Chấp Nhận");
@@ -56,10 +58,10 @@ public class BanBeServiceImple implements BanBeService {
     if (reverseRequest.isPresent()) {
       BanBeEntity reverseFriendRequest = reverseRequest.get();
       if (reverseFriendRequest.getTrangThaiBB().equals("Chờ Chấp Nhận")) {
-        throw new RuntimeException("Người dùng " + receiverId + " đang gửi yêu cầu kết bạn đến bạn.");
+        throw new RuntimeException("Nguoi dung " + receiverId + " dang gui yeu cau ket ban den ban.");
       }
       if (reverseFriendRequest.getTrangThaiBB().equals("Đã Đồng Ý")) {
-        throw new RuntimeException("Hai người đã là bạn bè.");
+        throw new RuntimeException("Hai nguoi da la ban be.");
       }
       if (reverseFriendRequest.getTrangThaiBB().equals("Không Đồng Ý")
           || reverseFriendRequest.getTrangThaiBB().equals("Đã Xóa")) {
@@ -98,25 +100,26 @@ public class BanBeServiceImple implements BanBeService {
   @Override
   public void cancelFriendRequest(Integer senderId, Integer receiverId) {
     BanBeEntity friendRequest = banBeRepository.findByMaTK1AndMaTK2(senderId, receiverId)
-        .orElseThrow(() -> new RuntimeException("Không tìm thấy yêu cầu kết bạn."));
+        .orElseThrow(() -> new RuntimeException("Khong tim thay yeu cau ket ban."));
 
     // Kiểm tra trạng thái hiện tại
     if (!friendRequest.getTrangThaiBB().equals("Chờ Chấp Nhận")) {
-      throw new RuntimeException("Chỉ có thể hủy yêu cầu kết bạn khi trạng thái là 'Chờ Chấp Nhận'.");
+      throw new RuntimeException("Chi co the huy yeu cau ket ban khi trang thai la 'Cho Chap Nhan'.");
     }
 
     banBeRepository.delete(friendRequest);
   }
 
+  // Xóa bạn bè
   @Override
   public void removeFriend(Integer userId1, Integer userId2) {
     BanBeEntity relationship = banBeRepository.findByMaTK1AndMaTK2(userId1, userId2)
         .or(() -> banBeRepository.findByMaTK1AndMaTK2(userId2, userId1))
-        .orElseThrow(() -> new RuntimeException("Không tìm thấy mối quan hệ bạn bè."));
+        .orElseThrow(() -> new RuntimeException("Khong tim thay moi quan he ban be."));
 
     // Kiểm tra trạng thái hiện tại
     if (!relationship.getTrangThaiBB().equals("Đã Đồng Ý")) {
-      throw new RuntimeException("Chỉ có thể xóa bạn bè khi hai người đã là bạn bè.");
+      throw new RuntimeException("Chi co the xoa bạn be khi hau nguoi da la ban be.");
     }
 
     banBeRepository.delete(relationship);
@@ -136,6 +139,7 @@ public class BanBeServiceImple implements BanBeService {
     }).collect(Collectors.toList());
   }
 
+  // Lấy danh sách lời mời kết bạn với thông tin chi tiết
   @Override
   public List<Map<String, Object>> getFriendRequests(Integer userId) {
     List<Object[]> results = banBeRepository.findFriendRequestsWithDetails(userId);
@@ -159,13 +163,14 @@ public class BanBeServiceImple implements BanBeService {
   public void acceptFriendRequest(Integer requestId) {
     // Tìm lời mời kết bạn theo ID
     BanBeEntity request = banBeRepository.findById(requestId)
-        .orElseThrow(() -> new RuntimeException("Lời mời kết bạn không tồn tại."));
+        .orElseThrow(() -> new RuntimeException("Loi moi ket ban khong ton tai."));
 
     // Cập nhật trạng thái lời mời kết bạn thành "Đã Đồng Ý"
     request.setTrangThaiBB("Đã Đồng Ý");
     banBeRepository.save(request);
   }
 
+  // Từ chối lời mời kết bạn
   @Override
   public void rejectFriendRequest(Integer requestId) {
     banBeRepository.deleteById(requestId);
