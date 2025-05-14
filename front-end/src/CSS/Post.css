@@ -67,6 +67,7 @@
   cursor: pointer;
   font-size: 14px;
   color: #333;
+  min-width: 100px;
 }
 .menu-dropdown button:hover {
   background-color: #f2f2f2;

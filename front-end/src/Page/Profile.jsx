@@ -10,6 +10,14 @@ import { useLocation } from "react-router-dom";
 
 export default function Profile() {
   const { goToSignin } = useNavigation();
+  useEffect(() => {
+    const userData = sessionStorage.getItem("userSignin");
+    if (!userData) {
+            console.warn("Chưa có userSignin trong sessionStorage.");
+          toast.error("Vui lòng đăng nhập để tiếp tục.");
+          goToSignin();
+    }
+  }, []);
   const storedUserData = JSON.parse(sessionStorage.getItem("userSignin"));
   const [postsUser, setPostsUser] = useState([]);
   const [maTK, setMaTK] = useState([]);
@@ -98,7 +106,9 @@ export default function Profile() {
       }
     }
   };
-
+const handleDeletePost = () => {
+    fetchPosts(maTK);
+  };
   const fetchPosts = async (userId) => {
     try {
       const res = await axios.get(
@@ -285,7 +295,8 @@ export default function Profile() {
           {maTK && <PostForm maTK={maTK} onPostSubmit={fetchPosts} />}
           <div className="posts-list">
             {postsUser.length > 0 ? (
-              postsUser.map((post) => <Post key={post.maBV} post={post} />)
+              postsUser.map((post) => <Post key={post.maBV} post={post} 
+                onDelete={handleDeletePost} />)
             ) : (
               <p>Không có bài viết nào.</p>
             )}

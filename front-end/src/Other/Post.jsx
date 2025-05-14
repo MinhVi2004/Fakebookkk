@@ -7,7 +7,7 @@ import "../CSS/Post.css";
 import { toast } from "react-toastify";
 import confirm from "../Other/Confirm";
 import { useNavigation } from "./navigation" // Import useNavigation từ file navigation.js
-const Post = ({ post, onDelete }) => {
+const Post = ({ post, onDelete = () => {} }) => {
       const { goToProfileById } = useNavigation();
   const [likes, setLikes] = useState(post.luotThichList?.length || 0);
   const [hasLiked, setHasLiked] = useState(() => {
@@ -60,21 +60,19 @@ const Post = ({ post, onDelete }) => {
 
     if (confirmed) {
       try {
-        // Gửi yêu cầu xóa bài viết lên backend
-        await axios.delete(
-          `http://localhost:8080/api/fakebook/posts/${post.maBV}`
-        );
-
-        // Thông báo thành công
-        toast.success("Bài viết đã được xóa.");
-
-        // Gọi lại callback onDelete từ props để xóa bài viết khỏi UI
-        onDelete(post.maBV);
+            const response = await axios.delete(`http://localhost:8080/api/fakebook/posts/${post.maBV}`);
+            if (response.status === 200) {
+                  toast.success(response.data.message);
+                  console.log("onDelete:", onDelete);
+                  onDelete(post.maBV);
+            } else {
+                  toast.error(response.data.message || "Không thể xóa bài viết.");
+            }
       } catch (error) {
-        // Xử lý lỗi nếu có
-        console.error("Có lỗi xảy ra khi xóa bài viết:", error);
-        toast.error("Có lỗi xảy ra khi xóa bài viết. Vui lòng thử lại.");
+            console.error("Có lỗi xảy ra khi xóa bài viết: ", error);
+            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
       }
+
     }
   };
 
