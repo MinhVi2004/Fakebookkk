@@ -90,29 +90,30 @@ public class TaiKhoanController {
                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
           }
      }
+
      @GetMapping("/user/{maTK}")
-public ResponseEntity<?> getTaiKhoanById(@PathVariable Integer maTK) {
-    try {
-        TaiKhoanDTO taiKhoanDTO = taiKhoanService.getTaiKhoanById(maTK);
-        if (taiKhoanDTO != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "success");
-            response.put("message", "Lấy thông tin thành công");
-            response.put("data", taiKhoanDTO);
-            return ResponseEntity.ok(response);
-        } else {
-            Map<String, Object> response = new HashMap<>();
-            response.put("status", "error");
-            response.put("message", "Không tìm thấy người dùng với ID: " + maTK);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-        }
-    } catch (RuntimeException ex) {
-        Map<String, Object> error = new HashMap<>();
-        error.put("status", "error");
-        error.put("message", "Lỗi khi lấy thông tin người dùng: " + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-}
+     public ResponseEntity<?> getTaiKhoanById(@PathVariable Integer maTK) {
+          try {
+               TaiKhoanDTO taiKhoanDTO = taiKhoanService.getTaiKhoanById(maTK);
+               if (taiKhoanDTO != null) {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("status", "success");
+                    response.put("message", "Lấy thông tin thành công");
+                    response.put("data", taiKhoanDTO);
+                    return ResponseEntity.ok(response);
+               } else {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("status", "error");
+                    response.put("message", "Không tìm thấy người dùng với ID: " + maTK);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+               }
+          } catch (RuntimeException ex) {
+               Map<String, Object> error = new HashMap<>();
+               error.put("status", "error");
+               error.put("message", "Lỗi khi lấy thông tin người dùng: " + ex.getMessage());
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+          }
+     }
 
      @PutMapping("/update")
      public ResponseEntity<?> updateTaiKhoan(@RequestBody TaiKhoanDTO taiKhoanDTO) {
@@ -126,14 +127,13 @@ public ResponseEntity<?> getTaiKhoanById(@PathVariable Integer maTK) {
                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
           }
      }
+
      @GetMapping("/searchUser")
-      public ResponseEntity<?> searchUser(@RequestParam String keyWord) {
-            List<TaiKhoanDTO> list = taiKhoanService.getAllTaiKhoanByHoTen(keyWord);
-            return ResponseEntity.ok(list);
-      }
+     public ResponseEntity<?> searchUser(@RequestParam String keyWord) {
+          List<TaiKhoanDTO> list = taiKhoanService.getAllTaiKhoanByHoTen(keyWord);
+          return ResponseEntity.ok(list);
+     }
 
-
-     
      @PutMapping("/update-profile/{maTK}")
      public ResponseEntity<?> updateProfile(
                @PathVariable Integer maTK,
@@ -141,19 +141,19 @@ public ResponseEntity<?> getTaiKhoanById(@PathVariable Integer maTK) {
                @RequestParam(value = "profilePic", required = false) MultipartFile profilePic,
                @RequestParam(value = "coverPic", required = false) MultipartFile coverPic) {
           try {
-               System.out.println("Nhận yêu cầu cập nhật thông tin cho maTK: " + maTK);
+               System.out.println("Nhan yeu cau cap nhap thong tin cho maTK: " + maTK);
                TaiKhoanEntity updatedUser = taiKhoanService.updateProfile(maTK, userName, profilePic, coverPic);
                Map<String, Object> response = new HashMap<>();
                response.put("status", "success");
-               response.put("message", "Cập nhật thông tin thành công");
+               response.put("message", "Cap nhap thong tin thanh cong");
                response.put("data", updatedUser); // Trả về dữ liệu người dùng đã cập nhật
 
                return ResponseEntity.ok(response);
           } catch (RuntimeException ex) {
-               System.err.println("Lỗi khi cập nhật thông tin: " + ex.getMessage());
+               System.err.println("Loi khi cap nhap thong tin: " + ex.getMessage());
                Map<String, Object> error = new HashMap<>();
                error.put("status", "error");
-               error.put("message", "Cập nhật thất bại: " + ex.getMessage());
+               error.put("message", "Cap nhap that bai: " + ex.getMessage());
                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
           }
      }

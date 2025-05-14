@@ -38,8 +38,8 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           }
           // Kiểm tra trùng email
           if (taiKhoanRepository.existsByEmail(taiKhoanDTO.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng");
-       }
+               throw new RuntimeException("Email đã được sử dụng");
+          }
 
           // Gán các giá trị mặc định
           taiKhoanDTO.setProfilePic("default.png");
@@ -55,7 +55,7 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           // Trả lại DTO
           return TaiKhoanMapper.mapToTaiKhoanDTO(savedTaiKhoanEntity);
      }
-  
+
      @Override
      public TaiKhoanDTO updateTaiKhoan(TaiKhoanDTO taiKhoanDTO) {
           Optional<TaiKhoanEntity> optionalTaiKhoan = taiKhoanRepository.findById(taiKhoanDTO.getMaTK());
@@ -101,6 +101,7 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           }
           return null;
      }
+
      @Override
      public List<TaiKhoanDTO> getAllTaiKhoan() {
           List<TaiKhoanEntity> entities = taiKhoanRepository.findAll();
@@ -108,6 +109,7 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
                     .map(TaiKhoanMapper::mapToTaiKhoanDTO)
                     .collect(Collectors.toList());
      }
+
      @Override
      public List<TaiKhoanDTO> getAllTaiKhoanByHoTen(String hoTen) {
           List<TaiKhoanEntity> entities = taiKhoanRepository.findByHoTenContaining(hoTen);
@@ -115,6 +117,7 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
                     .map(TaiKhoanMapper::mapToTaiKhoanDTO)
                     .collect(Collectors.toList());
      }
+
      @Override
      public List<TaiKhoanDTO> getAllTaiKhoanByTrangThai(String trangThai) {
           List<TaiKhoanEntity> entities = taiKhoanRepository.findByTrangThai(trangThai);
@@ -165,83 +168,79 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
           return "OK";
      }
 
+     // update profile////////////////////////////
      @Override
      public TaiKhoanEntity updateProfile(Integer maTK, String userName, MultipartFile profilePic,
                MultipartFile coverPic) {
-          System.out.println("Bắt đầu cập nhật thông tin cho maTK: " + maTK);
+          System.out.println("Bat dau cap nhap thong tin cho maTK: " + maTK);
           Optional<TaiKhoanEntity> optionalTaiKhoan = taiKhoanRepository.findById(maTK);
           if (optionalTaiKhoan.isPresent()) {
                TaiKhoanEntity taiKhoan = optionalTaiKhoan.get();
-               System.out.println("Người dùng tìm thấy: " + taiKhoan.getHoTen());
+               System.out.println("Nguoi dung tim thay: " + taiKhoan.getHoTen());
 
                // Cập nhật tên người dùng nếu có
                if (userName != null && !userName.isEmpty()) {
                     taiKhoan.setHoTen(userName);
-                    System.out.println("Tên người dùng mới: " + userName);
+                    System.out.println("Ten nguoi dung moi: " + userName);
                }
 
                // Cập nhật ảnh đại diện nếu có
                if (profilePic != null && !profilePic.isEmpty()) {
                     String profilePicPath = saveFile(profilePic, "Avatar");
                     taiKhoan.setProfilePic(profilePicPath);
-                    System.out.println("Đường dẫn ảnh đại diện: " + profilePicPath);
+                    System.out.println("Duong dan anh dai dien: " + profilePicPath);
+               } else {
+                    System.out.println("Khong co anh dai dien moi, giu nguyen anh cu");
                }
 
                // Cập nhật ảnh bìa nếu có
                if (coverPic != null && !coverPic.isEmpty()) {
-                    System.out.println("Bắt đầu lưu ảnh bìa");
+                    System.out.println("Bat dau luu anh bia");
                     String coverPicPath = saveFile(coverPic, "Background");
                     taiKhoan.setCoverPic(coverPicPath);
-                    System.out.println("Đường dẫn ảnh bìa đã lưu: " + coverPicPath);
+                    System.out.println("Đuong dan anh bia: " + coverPicPath);
                } else {
-                    System.out.println("Không có ảnh bìa mới, giữ nguyên ảnh bìa cũ");
+                    System.out.println("Khong co anh bia moi, giu nguyen anh cu");
                }
                // Lưu thay đổi vào cơ sở dữ liệu
                taiKhoanRepository.save(taiKhoan);
-               System.out.println("Cập nhật thành công cho maTK: " + maTK);
+               System.out.println("Cap nhat thanh cong cho maTK: " + maTK);
                return taiKhoan;
           } else {
-               throw new RuntimeException("Không tìm thấy người dùng với ID: " + maTK);
+               throw new RuntimeException("Khong tim thay nguoi dung voi ID: " + maTK);
           }
      }
 
      // Lưu file vào thư mục
      private String saveFile(MultipartFile file, String folder) {
           try {
-               // Đường dẫn thư mục tuyệt đối
-               // String baseFolder =
-               // "D:/cayyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/Fakebook/front-end/public/Resource/";
-               // Điều hướng đến thư mục front-end/public/Resource
+
                String currentDir = System.getProperty("user.dir");
-               System.out.println("Thư mục làm việc hiện tại: " + currentDir);
+               System.out.println("Thu muc lam viec hien tai: " + currentDir);
 
                // Điều hướng đến thư mục front-end/public/Resource
                Path baseFolder = Paths.get(currentDir).getParent() // Lấy thư mục cha của backend
                          .resolve("front-end/public/Resource");
                // Sử dụng tên file gốc
                String fileName = file.getOriginalFilename();
-               System.out.println("Tên file gốc: " + fileName);
+               System.out.println("Ten file goc: " + fileName);
 
-               // Kết hợp đường dẫn thư mục tuyệt đối với folder và tên file
-               // Path filePath = Paths.get(baseFolder, folder, fileName);
-               // System.out.println("Đường dẫn file: " + filePath);
-               // .resolve có tác dụng để kết hợp các phần của đường dẫn
                Path filePath = baseFolder.resolve(folder).resolve(fileName);
-               System.out.println("Đường dẫn file: " + filePath);
+               System.out.println("Duong dan file: " + filePath);
 
                // Tạo thư mục nếu chưa tồn tại
                Files.createDirectories(filePath.getParent());
-               System.out.println("Thư mục đã được tạo (nếu chưa tồn tại)");
+               System.out.println("Thu muc da duoc tao(neu chua ton tai)");
 
                // Ghi nội dung file vào đường dẫn
                Files.write(filePath, file.getBytes());
-               System.out.println("File đã được lưu thành công");
+               System.out.println("File da duoc luu thanh cong");
 
                // Trả về tên file (không bao gồm thư mục)
                return fileName;
           } catch (IOException e) {
-               System.err.println("Lỗi khi lưu file: " + e.getMessage());
-               throw new RuntimeException("Lỗi khi lưu file: " + e.getMessage());
+               System.err.println("Loi khi luu file: " + e.getMessage());
+               throw new RuntimeException("Loi khi luu file: " + e.getMessage());
           }
      }
 
