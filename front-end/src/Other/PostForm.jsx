@@ -128,7 +128,7 @@ formData.append("loaiDKs", JSON.stringify(loaiDKs));
       );
 
       if (response.status !== 200) throw new Error("Tạo bài viết thất bại.");
-
+      toast.success("Tạo bài viết thành công!");
       onPostSubmit(); // Gọi lại danh sách bài viết
 
       // Reset các giá trị
@@ -141,6 +141,9 @@ formData.append("loaiDKs", JSON.stringify(loaiDKs));
       if (imageInputRef.current) imageInputRef.current.value = null;
       if (videoInputRef.current) videoInputRef.current.value = null;
       if (onEditDone) onEditDone();
+      setTimeout(() => {
+            window.location.reload();
+      }, 1000); // chờ 1 giây trước khi reload
     } catch (err) {
       console.error(err);
       toast.error("Tạo bài viết thất bại. Vui lòng thử lại sau.");

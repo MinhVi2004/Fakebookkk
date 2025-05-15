@@ -3,8 +3,12 @@ import axios from "axios";
 import Post from "../Other/Post";
 import PostForm from "../Other/PostForm";
 import "../CSS/HomePage.css";
+import { useNavigation } from "../Other/navigation"; // Import useNavigation từ file navigation.js
+import { toast } from "react-toastify";
 
 const Home = () => {
+      
+      const { goToSignin } = useNavigation();
   const [posts, setPosts] = useState([]);
   const [maTK, setMaTK] = useState("");
   // Lấy maTK từ sessionStorage
@@ -17,12 +21,16 @@ const Home = () => {
           setMaTK(parsedUser.maTK);
         } else {
           console.warn("Không tìm thấy mã tài khoản trong userSignin.");
+          toast.error("Vui lòng đăng nhập để tiếp tục.");
+          goToSignin();
         }
       } catch (e) {
         console.error("Lỗi khi parse userSignin:", e);
       }
     } else {
       console.warn("Chưa có userSignin trong sessionStorage.");
+          toast.error("Vui lòng đăng nhập để tiếp tục.");
+          goToSignin();
     }
   }, []);
 
@@ -49,6 +57,7 @@ const Home = () => {
   };
 
   // Khi xoá bài viết → gọi lại API
+  // Khi xóa bài viết → lọc ra khỏi state
   const handleDeletePost = () => {
     fetchPosts();
   };

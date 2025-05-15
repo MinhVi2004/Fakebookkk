@@ -19,7 +19,9 @@
      margin-bottom: 10px;
      border-radius: 8px;
      cursor: pointer;
-     transition: background 0.2s;
+     transition: background 0.2s;/* Giới hạn kích thước và xử lý tràn */
+    max-width: 100%;
+    overflow: hidden;
 }
 .user-status {
       font-weight: bold;

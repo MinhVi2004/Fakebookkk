@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -390,38 +391,30 @@ public ResponseEntity<?> createPost(
     @PostMapping("/comment/delete/{maBL}")
     public void deleteComment(@PathVariable int maBL) {
         binhLuanService.deleteByMaBL(maBL);
-    }
+    } 
     @DeleteMapping("/{maBV}")
-      public ResponseEntity<?> deletePost(@PathVariable int maBV) {
-            try {
-                  // Kiểm tra nếu bài viết tồn tại
-                  BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
-                  if (baiVietDTO == null) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                              .body("Bài viết không tồn tại");
-                  }
+public ResponseEntity<?> deletePost(@PathVariable int maBV) {
+    try {
+        BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
+        if (baiVietDTO == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                  .body(Map.of("message", "Bài viết không tồn tại"));
+        }
 
-                  // Xóa tất cả các file đính kèm liên quan đến bài viết
-                  List<BaiVietDinhKemDTO> baiVietDinhKemList = baiVietDinhKemService.getAllBaiVietDinhKemByMaBV(maBV);
-                  for (BaiVietDinhKemDTO dinhKemDTO : baiVietDinhKemList) {
-                        // Xóa file từ hệ thống hoặc Cloud storage (tuỳ vào cách bạn lưu trữ)
-                        fileService.deleteFile("DinhKem", dinhKemDTO.getLinkDK());
-                  }
+        boolean deleted = baiVietService.deleteBaiViet(maBV);
+        if (deleted) {
+            return ResponseEntity.ok(Map.of("message", "Bài viết đã được xóa thành công"));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                  .body(Map.of("message", "Không thể xóa bài viết"));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(Map.of("message", "Đã xảy ra lỗi khi xóa bài viết"));
+    }
+}
 
-                  // Xóa bài viết
-                  baiVietService.deleteBaiViet(maBV);
-
-                  // Trả về phản hồi thành công
-                  return ResponseEntity.ok("Bài viết đã được xóa thành công");
-            } catch (Exception e) {
-                  // In ra lỗi để kiểm tra
-                  e.printStackTrace();
-
-                  // Trả về thông báo lỗi với chi tiết thông qua ResponseEntity
-                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Đã xảy ra lỗi trong quá trình xóa bài viết. Vui lòng thử lại sau.");
-            }
-      }
 
 
 
