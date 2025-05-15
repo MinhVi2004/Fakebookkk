@@ -1,65 +1,107 @@
-.unread-badge {
-  background-color: red;
-  color: white;
-  border-radius: 12px;
-  padding: 2px 6px;
-  font-size: 12px;
-  margin-left: 8px;
-}
 .chat-sidebar {
   position: fixed;
-  top: 0; /* chiều cao topbar nếu có, chỉnh lại nếu khác */
-  right: 0;
-  width: 250px;
-  height: calc(100vh - 60px); /* trừ topbar */
-  background-color: #fff;
-  border-left: 1px solid #ccc;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
-  padding: 10px;
-  overflow-y: auto;
-  z-index: 1000;
+  bottom: 0;
+  right: 5px;
+  width: 330px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  max-height: 450px;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
 }
 
-.chat-sidebar h3 {
-  margin: 0;
-  padding: 16px;
-  font-size: 18px;
+.chat-sidebar-header {
+  background-color: #424243;
+  color: white;
+  padding: 7px 10px;
   font-weight: bold;
-  border-bottom: 1px solid #eee;
-  background-color: #f7f7f7;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.chat-sidebar ul {
-  list-style: none;
+.chat-title {
+  font-size: 16px;
+}
+
+.toggle-button {
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.toggle-button:hover {
+  color: #7b8086;
+}
+
+.chat-sidebar-content {
   margin: 0;
   padding: 0;
+  overflow-y: auto;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  transform-origin: top;
+  background-color: #fff;
 }
 
-.chat-sidebar li {
+.chat-sidebar-content.hidden {
+  transform: scaleY(0);
+  opacity: 0;
+  height: 0;
+}
+
+.chat-sidebar-content.visible {
+  max-height: 350px;
+  min-height: 350px;
+  transform: scaleY(1);
+  opacity: 1;
+}
+
+.friend-item {
+  list-style: none;
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  gap: 10px;
+  margin: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease;
+  position: relative;
 }
 
-.chat-sidebar li:hover {
-  background-color: #f2f2f2;
+.friend-item:hover {
+  background-color: #f5f5f5;
 }
 
 .profile-pic {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  margin-right: 12px;
+  object-fit: cover;
 }
 
 .profile-name {
-  font-size: 14px;
-  color: #333;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex-grow: 1;
+}
+
+.badge {
+  background-color: #f02849;
+  color: white;
+  font-size: 12px;
+  padding: 3px 7px;
+  border-radius: 12px;
+  font-weight: bold;
+  position: absolute;
+  right: 12px;
 }

@@ -27,6 +27,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 const AppContent = () => {
 
+      const [showSidebar, setShowSidebar] = useState(true); // 👈 thêm dòng này
       const userSignin = JSON.parse(sessionStorage.getItem("userSignin"));
       const [selectedFriend, setSelectedFriend] = useState(null);
       const [unreadCounts, setUnreadCounts] = useState({});
@@ -90,8 +91,10 @@ const AppContent = () => {
   ) : (
     <div className="flex h-screen">
       <ChatSidebar
-        onSelectFriend={handleSelectFriend}
-        unreadCounts={unreadCounts}
+            onSelectFriend={handleSelectFriend}
+            unreadCounts={unreadCounts}
+            visible={showSidebar}
+            onToggle={() => setShowSidebar((prev) => !prev)}
       />
 
       <div className="flex flex-col flex-grow">
