@@ -73,8 +73,8 @@ public class BaiVietController {
     @Autowired
     private FileService fileService; // Inject ImageService
 
-    @GetMapping("")
-    public ResponseEntity<?> getAllPost() {
+    @GetMapping("/home/{maTK}")
+    public ResponseEntity<?> getAllPost(@PathVariable int maTK) {
         List<BaiVietDTO> baiVietList = baiVietService.findAllByOrderByThoiGianDesc();
         List<BaiVietResponseDTO> baiVietResponseList = new ArrayList<BaiVietResponseDTO>();
 
@@ -139,7 +139,7 @@ public class BaiVietController {
 
         return ResponseEntity.ok(baiVietResponseList);
     }
-    @GetMapping("/{maTK}")
+    @GetMapping("/profile/{maTK}")
     public ResponseEntity<?> getAllPostById(@PathVariable int maTK) {
         List<BaiVietDTO> baiVietList = baiVietService.findAllByOrderByThoiGianDesc();
         List<BaiVietResponseDTO> baiVietResponseList = new ArrayList<BaiVietResponseDTO>();

@@ -178,15 +178,23 @@ formData.append("loaiDKs", JSON.stringify(loaiDKs));
 
   const isPostValid =
     noiDung.trim().length > 0 || imageFiles.length > 0 || videoFiles.length > 0;
+  const profilePic = JSON.parse(sessionStorage.getItem("userSignin")).profilePic;
 
   return (
     <div className="post-form">
-      <textarea
-        placeholder="Bạn đang nghĩ gì?"
-        value={noiDung}
-        onChange={(e) => setNoiDung(e.target.value)}
-        style={{ minHeight: "100px", maxHeight: "300px", overflowY: "auto" }}
-      />
+      <div>
+            <img
+                  src={`Resource/Avatar/${profilePic}`}
+                  alt=""
+                  className="profile-pic"
+                  />
+            <textarea
+                  placeholder="Bạn đang nghĩ gì?"
+                  value={noiDung}
+                  onChange={(e) => setNoiDung(e.target.value)}
+                  style={{ minHeight: "100px", maxHeight: "300px", overflowY: "auto" }}
+                  />
+      </div>
 
       <div className="media-upload">
         <label className="upload-btn">

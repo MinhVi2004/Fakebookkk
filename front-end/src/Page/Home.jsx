@@ -37,7 +37,7 @@ const Home = () => {
   // Tách hàm fetch ra để dùng lại
   const fetchPosts = async () => {
       try {
-            const res = await axios.get(`http://localhost:8080/api/fakebook/posts/${maTK}`);
+            const res = await axios.get(`http://localhost:8080/api/fakebook/posts/home/${maTK}`);
 
             if (Array.isArray(res.data)) {
                   setPosts(res.data.sort((a, b) => b.maBV - a.maBV));
@@ -52,7 +52,7 @@ const Home = () => {
             if (maTK) {
             fetchPosts();
             }
-            }, [maTK]);
+      }, [maTK]);
 
   // Khi tạo bài viết mới → gọi lại API
       const handlePostSubmit = () => {

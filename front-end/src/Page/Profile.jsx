@@ -112,7 +112,7 @@ const handleDeletePost = () => {
   const fetchPosts = async (userId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/fakebook/posts/${userId}`
+        `http://localhost:8080/api/fakebook/posts/profile/${userId}`
       );
       setPostsUser(res.data.sort((a, b) => b.maBV - a.maBV)); // Sort posts by ID
     } catch (err) {

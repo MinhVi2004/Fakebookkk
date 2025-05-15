@@ -14,7 +14,6 @@ public class TaiKhoanEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaTK")
     private int MaTK;
-
     @Column(name = "TenDangNhap")
     private String tenDangNhap;
     @Column(name = "ProfilePic")
