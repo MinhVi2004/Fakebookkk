@@ -36,31 +36,31 @@ const Home = () => {
 
   // Tách hàm fetch ra để dùng lại
   const fetchPosts = async () => {
-    try {
-      const res = await axios.get("http://localhost:8080/api/fakebook/posts");
-      if (Array.isArray(res.data)) {
-        setPosts(res.data.sort((a, b) => b.maBV - a.maBV));
+      try {
+            const res = await axios.get("http://localhost:8080/api/fakebook/posts/{"+maTK+"}");
+            if (Array.isArray(res.data)) {
+                  setPosts(res.data.sort((a, b) => b.maBV - a.maBV));
+            }
+      } catch (err) {
+            console.error("Lỗi khi lấy bài viết:", err);
       }
-    } catch (err) {
-      console.error("Lỗi khi lấy bài viết:", err);
-    }
   };
 
   // Gọi khi component mount
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+      useEffect(() => {
+            fetchPosts();
+      }, []);
 
   // Khi tạo bài viết mới → gọi lại API
-  const handlePostSubmit = () => {
-    fetchPosts();
-  };
+      const handlePostSubmit = () => {
+            fetchPosts();
+      };
 
   // Khi xoá bài viết → gọi lại API
   // Khi xóa bài viết → lọc ra khỏi state
-  const handleDeletePost = () => {
-    fetchPosts();
-  };
+      const handleDeletePost = () => {
+            fetchPosts();
+      };
 
 
   return (
@@ -86,5 +86,7 @@ const Home = () => {
     </div>
   );
 };
+
+
 
 export default Home;

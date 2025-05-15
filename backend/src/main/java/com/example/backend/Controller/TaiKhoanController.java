@@ -127,7 +127,21 @@ public class TaiKhoanController {
                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
           }
      }
-
+      @PutMapping("/updateMatKhau/{maTK}")
+     public ResponseEntity<?> updateMatKhau(@PathVariable Integer maTK) {
+          boolean updated = taiKhoanService.updateMatKhau(maTK, "123456");
+          if (updated) {
+               return ResponseEntity.ok(Map.of(
+                  "status", "success",
+                  "message", "Cập nhật mật khẩu thành công"
+                  ));
+          } else {
+               Map<String, Object> response = new HashMap<>();
+               response.put("status", "error");
+               response.put("message", "Không tìm thấy người dùng để cập nhật");
+               return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+          }
+     }
      @GetMapping("/searchUser")
      public ResponseEntity<?> searchUser(@RequestParam String keyWord) {
           List<TaiKhoanDTO> list = taiKhoanService.getAllTaiKhoanByHoTen(keyWord);

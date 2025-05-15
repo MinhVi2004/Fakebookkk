@@ -120,7 +120,17 @@ public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> 
         }
         return false;
     }
-
+@Override
+    public boolean changLoaiChiaSeBaiViet(int maBV, String loaiChiaSe) {
+        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(maBV);
+        if (baiVietEntityOptional.isPresent()) {
+            BaiVietEntity baiVietEntity = baiVietEntityOptional.get();
+            baiVietEntity.setLoaiChiaSe(loaiChiaSe);
+            baiVietRepository.save(baiVietEntity);
+            return true;
+        }
+        return false;
+    }
     @Override
     public List<BaiVietDTO> getBaiVietByMaTK(int maTK) {
         List<BaiVietEntity> baiVietEntities = baiVietRepository.findByMaTK(maTK);

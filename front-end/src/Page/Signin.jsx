@@ -72,9 +72,6 @@ function Signin() {
                     >
                          signin
                     </button>
-                    <a src="#" id="signin-forget">
-                         Forgotten password ?
-                    </a>
                     <span className="line"></span>
                     <Link to="/signup" className="text-decoration-none">
                          <button

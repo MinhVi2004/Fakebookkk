@@ -81,7 +81,7 @@ public class BaiVietController {
         for (BaiVietDTO baiVietDTO : baiVietList) {
             TaiKhoanDTO taiKhoanDTO = taiKhoanService.getTaiKhoanById(baiVietDTO.getMaTK());
 
-            if (baiVietDTO.getTrangThai().equals("Bình Thường")) {
+            if (baiVietDTO.getTrangThai().equals("Bình Thường") && !baiVietDTO.getLoaiChiaSe().equals("Chỉ Mình Tôi")) {
                 BaiVietResponseDTO baiVietResponseDTO = new BaiVietResponseDTO();
 
                 // Lấy danh sách file đính kèm
@@ -346,34 +346,34 @@ public class BaiVietController {
 //     }
 // }
 
-@PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public ResponseEntity<?> createPost(
-        @RequestPart("baiViet") String baiVietJson,
-        @RequestPart(value = "dinhKems", required = false) String dinhKemsJson,
-        @RequestPart(value = "loaiDKs", required = false) String loaiDKsJson) {
-    try {
-        ObjectMapper mapper = new ObjectMapper();
-        BaiVietDTO baiVietDTO = mapper.readValue(baiVietJson, BaiVietDTO.class);
+      @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+      public ResponseEntity<?> createPost(
+            @RequestPart("baiViet") String baiVietJson,
+            @RequestPart(value = "dinhKems", required = false) String dinhKemsJson,
+            @RequestPart(value = "loaiDKs", required = false) String loaiDKsJson) {
+            try {
+                  ObjectMapper mapper = new ObjectMapper();
+                  BaiVietDTO baiVietDTO = mapper.readValue(baiVietJson, BaiVietDTO.class);
 
-        List<String> dinhKemsBase64 = new ArrayList<>();
-        if (dinhKemsJson != null && !dinhKemsJson.isEmpty()) {
-            dinhKemsBase64 = mapper.readValue(dinhKemsJson, new TypeReference<List<String>>() {});
-        }
+                  List<String> dinhKemsBase64 = new ArrayList<>();
+                  if (dinhKemsJson != null && !dinhKemsJson.isEmpty()) {
+                        dinhKemsBase64 = mapper.readValue(dinhKemsJson, new TypeReference<List<String>>() {});
+                  }
 
-        List<String> loaiDKs = new ArrayList<>();
-        if (loaiDKsJson != null && !loaiDKsJson.isEmpty()) {
-            loaiDKs = mapper.readValue(loaiDKsJson, new TypeReference<List<String>>() {});
-        }
+                  List<String> loaiDKs = new ArrayList<>();
+                  if (loaiDKsJson != null && !loaiDKsJson.isEmpty()) {
+                        loaiDKs = mapper.readValue(loaiDKsJson, new TypeReference<List<String>>() {});
+                  }
 
-        // Chuyển toàn bộ xử lý sang Service
-        return ResponseEntity.ok(baiVietService.createBaiVietWithDinhKems(baiVietDTO, dinhKemsBase64, loaiDKs));
+                  // Chuyển toàn bộ xử lý sang Service
+                  return ResponseEntity.ok(baiVietService.createBaiVietWithDinhKems(baiVietDTO, dinhKemsBase64, loaiDKs));
 
-    } catch (IOException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi JSON đầu vào: " + e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
-    }
-}
+            } catch (IOException e) {
+                  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi JSON đầu vào: " + e.getMessage());
+            } catch (Exception e) {
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi hệ thống: " + e.getMessage());
+            }
+      }
 
     
 
@@ -393,29 +393,71 @@ public ResponseEntity<?> createPost(
         binhLuanService.deleteByMaBL(maBL);
     } 
     @DeleteMapping("/{maBV}")
-public ResponseEntity<?> deletePost(@PathVariable int maBV) {
-    try {
-        BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
-        if (baiVietDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                  .body(Map.of("message", "Bài viết không tồn tại"));
-        }
+      public ResponseEntity<?> deletePost(@PathVariable int maBV) {
+            try {
+                  BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
+                  if (baiVietDTO == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                              .body(Map.of("message", "Bài viết không tồn tại"));
+                  }
 
-        boolean deleted = baiVietService.deleteBaiViet(maBV);
-        if (deleted) {
-            return ResponseEntity.ok(Map.of("message", "Bài viết đã được xóa thành công"));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                  .body(Map.of("message", "Không thể xóa bài viết"));
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-              .body(Map.of("message", "Đã xảy ra lỗi khi xóa bài viết"));
-    }
-}
+                  boolean deleted = baiVietService.deleteBaiViet(maBV);
+                  if (deleted) {
+                        return ResponseEntity.ok(Map.of("message", "Bài viết đã được xóa thành công"));
+                  } else {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                              .body(Map.of("message", "Không thể xóa bài viết"));
+                  }
+            } catch (Exception e) {
+                  e.printStackTrace();
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Đã xảy ra lỗi khi xóa bài viết"));
+            }
+      }
+      
+      @PostMapping("/onlyme/{maBV}")
+      public ResponseEntity<?> updateChiMinhToi(@PathVariable int maBV) {
+            try {
+                  BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
+                  if (baiVietDTO == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                              .body(Map.of("message", "Bài viết không tồn tại"));
+                  }
 
+                  boolean deleted = baiVietService.changLoaiChiaSeBaiViet(maBV, "Chỉ Mình Tôi");
+                  if (deleted) {
+                        return ResponseEntity.ok(Map.of("message", "Bài viết đã được chuyển thành chỉ mình tôi"));
+                  } else {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                              .body(Map.of("message", "Không thể chuyển thành chỉ mình tôi"));
+                  }
+            } catch (Exception e) {
+                  e.printStackTrace();
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Đã xảy ra lỗi khi chuyển thành chỉ mình tôi"));
+            }
+      }
+      @PostMapping("/all/{maBV}")
+      public ResponseEntity<?> updateTatCa(@PathVariable int maBV) {
+            try {
+                  BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
+                  if (baiVietDTO == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                              .body(Map.of("message", "Bài viết không tồn tại"));
+                  }
 
-
+                  boolean deleted = baiVietService.changLoaiChiaSeBaiViet(maBV, "Tất Cả");
+                  if (deleted) {
+                        return ResponseEntity.ok(Map.of("message", "Bài viết đã được chuyển thành tất Cả"));
+                  } else {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                              .body(Map.of("message", "Không thể chuyển thành tất Cả"));
+                  }
+            } catch (Exception e) {
+                  e.printStackTrace();
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Đã xảy ra lỗi khi chuyển thành tất Cả"));
+            }
+      }
 
 }

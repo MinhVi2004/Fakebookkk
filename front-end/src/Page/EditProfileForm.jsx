@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../CSS/EditProfileForm.css";
 
 const EditProfileForm = ({ userName, storedUserData, onSave, onCancel }) => {
+  const [inputName, setInputName] = useState(userName);
+
+  // Hàm kiểm tra chỉ cho nhập chữ và khoảng trắng
+  const handleNameChange = (e) => {
+    const value = e.target.value;
+    if (/^[a-zA-ZÀ-ỹ\s]*$/.test(value)) {
+      setInputName(value);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
 
     // Kiểm tra và thêm tên người dùng nếu thay đổi
-    const userNameInput = e.target["user-name"].value;
-    if (userNameInput !== storedUserData.userName) {
-      formData.append("userName", userNameInput);
+    if (inputName !== storedUserData.userName) {
+      formData.append("userName", inputName);
     }
 
     // Kiểm tra và thêm ảnh đại diện nếu có file được chọn
@@ -80,8 +89,7 @@ const EditProfileForm = ({ userName, storedUserData, onSave, onCancel }) => {
               name="cover-pic"
               accept="image/*"
               className="edit-profile-input"
-            />
-          </div>
+            /></div>
           <div className="edit-profile-group">
             <label htmlFor="user-name" className="edit-profile-label">
               Tên người dùng:
@@ -90,8 +98,11 @@ const EditProfileForm = ({ userName, storedUserData, onSave, onCancel }) => {
               type="text"
               id="user-name"
               name="user-name"
-              defaultValue={userName}
+              value={inputName}
+              onChange={handleNameChange}
               className="edit-profile-input"
+              placeholder="Chỉ nhập chữ cái và khoảng trắng"
+              autoComplete="off"
             />
           </div>
           <div className="edit-profile-actions">

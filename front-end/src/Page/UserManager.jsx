@@ -67,6 +67,30 @@
      }
 
      function UserDetailModal({ user, onClose, setUsers, setSelectedUser }) {
+      const handleResetPassword = async (user) => {
+            const confirmed = await confirm({
+            title: "Xác nhận",
+            text: "Bạn có chắc chắn muốn khôi phục mật khẩu cho tài khoản này?",
+            });
+
+            if (!confirmed) return;
+
+            const url = `http://localhost:8080/api/fakebook/updateMatKhau/${user.maTK}`;
+
+            fetch(url, { method: "PUT" })
+            .then((res) => {
+                  if (!res.ok) throw new Error("Lỗi khi cập nhật mật khẩu");
+                  return res.json();
+            })
+            .then((data) => {
+                  toast.success("Đã khôi phục mật khẩu thành công!");
+            })
+            .catch((err) => {
+                  console.error("Lỗi khi khôi phục mật khẩu:", err);
+                  toast.error("Đã có lỗi xảy ra khi khôi phục mật khẩu.");
+            });
+            };
+
       const handleToggleStatus = async () => {
         const isDisabled = user.trangThai === "Vô Hiệu Hóa";
         const confirmed = await confirm({
@@ -143,6 +167,9 @@
     
             <button className="status-button" onClick={() => handleToggleStatus(user)}>
               {user.trangThai === "Vô Hiệu Hóa" ? "Mở khóa tài khoản" : "Khóa tài khoản"}
+            </button>
+            <button className="status-button" onClick={() => handleResetPassword(user)}>
+                  Khôi phục mật khẩu (123456)
             </button>
           </div>
         </div>

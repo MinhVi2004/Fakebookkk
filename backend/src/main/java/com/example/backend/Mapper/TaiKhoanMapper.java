@@ -5,21 +5,21 @@ import com.example.backend.Entity.TaiKhoanEntity;
 
 public class TaiKhoanMapper {
     public static TaiKhoanDTO mapToTaiKhoanDTO(TaiKhoanEntity taiKhoanEntity) {
-        TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
-        taiKhoanDTO.setMaTK(taiKhoanEntity.getMaTK());
-        taiKhoanDTO.setTenDangNhap(taiKhoanEntity.getTenDangNhap());
-        taiKhoanDTO.setMatKhau(taiKhoanEntity.getMatKhau());
-        taiKhoanDTO.setProfilePic(taiKhoanEntity.getProfilePic());
-          taiKhoanDTO.setCoverPic(taiKhoanEntity.getCoverPic());
-        taiKhoanDTO.setHoTen(taiKhoanEntity.getHoTen());
-        taiKhoanDTO.setGioiTinh(taiKhoanEntity.getGioiTinh());
-          taiKhoanDTO.setEmail(taiKhoanEntity.getEmail());
-        taiKhoanDTO.setSoDienThoai(taiKhoanEntity.getSoDienThoai());
-        taiKhoanDTO.setNgaySinh(taiKhoanEntity.getNgaySinh());
-        taiKhoanDTO.setNgayTao(taiKhoanEntity.getNgayTao());
-        taiKhoanDTO.setTrangThai(taiKhoanEntity.getTrangThai());
-        taiKhoanDTO.setPhanQuyen(taiKhoanEntity.getPhanQuyen());
-        return taiKhoanDTO;
+            TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
+            taiKhoanDTO.setMaTK(taiKhoanEntity.getMaTK());
+            taiKhoanDTO.setTenDangNhap(taiKhoanEntity.getTenDangNhap());
+            taiKhoanDTO.setMatKhau(taiKhoanEntity.getMatKhau());
+            taiKhoanDTO.setProfilePic(taiKhoanEntity.getProfilePic());
+            taiKhoanDTO.setCoverPic(taiKhoanEntity.getCoverPic());
+            taiKhoanDTO.setHoTen(taiKhoanEntity.getHoTen());
+            taiKhoanDTO.setGioiTinh(taiKhoanEntity.getGioiTinh());
+            taiKhoanDTO.setEmail(taiKhoanEntity.getEmail());
+            taiKhoanDTO.setSoDienThoai(taiKhoanEntity.getSoDienThoai());
+            taiKhoanDTO.setNgaySinh(taiKhoanEntity.getNgaySinh());
+            taiKhoanDTO.setNgayTao(taiKhoanEntity.getNgayTao());
+            taiKhoanDTO.setTrangThai(taiKhoanEntity.getTrangThai());
+            taiKhoanDTO.setPhanQuyen(taiKhoanEntity.getPhanQuyen());
+            return taiKhoanDTO;
     }
 
     public static TaiKhoanEntity mapToTaiKhoanEntity(TaiKhoanDTO taiKhoanDTO) {

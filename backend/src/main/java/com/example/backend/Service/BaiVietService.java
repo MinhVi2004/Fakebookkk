@@ -13,6 +13,7 @@ public interface BaiVietService {
     BaiVietDTO createBaiViet(BaiVietDTO baiVietDTO);
     BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> dinhKems, List<String> loaiDKs);
     boolean changeStatusBaiViet(int maBV, String trangThai);
+    boolean changLoaiChiaSeBaiViet(int maBV, String loaiChiaSe);
       BaiVietDTO updateBaiViet(BaiVietDTO baiVietDTO);
       List<BaiVietDTO> getBaiVietByMaTK(int maTK);
       List<BaiVietDTO> getBaiVietByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe);

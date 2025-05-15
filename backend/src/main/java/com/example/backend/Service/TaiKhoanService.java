@@ -30,4 +30,5 @@ public interface TaiKhoanService {
 
     TaiKhoanEntity updateProfile(Integer maTK, String userName, MultipartFile profilePic, MultipartFile coverPic);
 
+    boolean updateMatKhau(Integer maTK, String newPassword);
 }

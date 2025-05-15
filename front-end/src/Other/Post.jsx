@@ -9,31 +9,31 @@ import confirm from "../Other/Confirm";
 import { useNavigation } from "./navigation" // Import useNavigation từ file navigation.js
 const Post = ({ post, onDelete = () => {} }) => {
       const { goToProfileById } = useNavigation();
-  const [likes, setLikes] = useState(post.luotThichList?.length || 0);
-  const [hasLiked, setHasLiked] = useState(() => {
-    const user = JSON.parse(sessionStorage.getItem("userSignin"));
-    return post.luotThichList?.some((like) => like.maTK === user?.maTK);
-  });
-  const [comments, setComments] = useState(post.binhLuanList || []);
-  const [showComments, setShowComments] = useState(false);
-  const [showFullCaption, setShowFullCaption] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+      const [likes, setLikes] = useState(post.luotThichList?.length || 0);
+      const [hasLiked, setHasLiked] = useState(() => {
+      const user = JSON.parse(sessionStorage.getItem("userSignin"));
+      return post.luotThichList?.some((like) => like.maTK === user?.maTK);
+      });
+      const [comments, setComments] = useState(post.binhLuanList || []);
+      const [showComments, setShowComments] = useState(false);
+      const [showFullCaption, setShowFullCaption] = useState(false);
+      const [showMenu, setShowMenu] = useState(false);
+      const [showModal, setShowModal] = useState(false);
 
-  const maxPreview = 4;
-  const maxCaptionLength = 200;
-  const caption = post.noiDung || "";
-  const captionLength = caption.length;
+      const maxPreview = 4;
+      const maxCaptionLength = 200;
+      const caption = post.noiDung || "";
+      const captionLength = caption.length;
 
-  // Phân tách ảnh/video từ baiVietDinhKemResponseList
-  const images =
-    post.baiVietDinhKemResponseList
-      ?.filter((dk) => dk.loaiDK === "image")
-      ?.map((dk) =>
-        dk.fileData && dk.fileData.startsWith("data:image")
-          ? dk.fileData
-          : `data:image/jpeg;base64,${dk.fileData}`
-      ) || [];
+      // Phân tách ảnh/video từ baiVietDinhKemResponseList
+      const images =
+      post.baiVietDinhKemResponseList
+            ?.filter((dk) => dk.loaiDK === "image")
+            ?.map((dk) =>
+            dk.fileData && dk.fileData.startsWith("data:image")
+            ? dk.fileData
+            : `data:image/jpeg;base64,${dk.fileData}`
+            ) || [];
 
   const videos =
     post.baiVietDinhKemResponseList
@@ -75,6 +75,56 @@ const Post = ({ post, onDelete = () => {} }) => {
 
     }
   };
+const handleOnlyme = async () => {
+    // Hiển thị thông báo xác nhận trước khi xóa bài viết
+    const confirmed = await confirm({
+      title: "Cập nhật bài viết",
+      text: "Bạn có chắc chắn muốn chuyển bài viết thành chỉ mình tôi ?",
+    });
+
+    if (confirmed) {
+      try {
+            const response = await axios.post(`http://localhost:8080/api/fakebook/posts/onlyme/${post.maBV}`);
+            if (response.status === 200) {
+                  toast.success(response.data.message);
+                  console.log("onDelete:", onDelete);
+                  onDelete(post.maBV);
+            } else {
+                  toast.error(response.data.message || "Không thể cập nhật trạng thái bài viết.");
+            }
+      } catch (error) {
+            console.error("Có lỗi xảy ra khi cập nhật trạng thái bài viết: ", error);
+            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+      }
+
+    }
+  };
+
+const handleForAll = async () => {
+    // Hiển thị thông báo xác nhận trước khi xóa bài viết
+    const confirmed = await confirm({
+      title: "Cập nhật bài viết",
+      text: "Bạn có chắc chắn muốn chuyển bài viết thành tất cả ?",
+    });
+
+    if (confirmed) {
+      try {
+            const response = await axios.post(`http://localhost:8080/api/fakebook/posts/all/${post.maBV}`);
+            if (response.status === 200) {
+                  toast.success(response.data.message);
+                  console.log("onDelete:", onDelete);
+                  onDelete(post.maBV);
+            } else {
+                  toast.error(response.data.message || "Không thể cập nhật trạng thái bài viết.");
+            }
+      } catch (error) {
+            console.error("Có lỗi xảy ra khi cập nhật trạng thái bài viết: ", error);
+            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+      }
+
+    }
+  };
+
 
   const toggleLike = async () => {
     if (!user) {
@@ -153,8 +203,29 @@ const Post = ({ post, onDelete = () => {} }) => {
                     setShowMenu(false);
                   }}
                 >
-                  🗑️ Xoá
+                   Xoá
                 </button>
+                  {post.loaiChiaSe === "Tất Cả" && (
+                  <button
+                        onClick={() => {
+                        handleOnlyme();
+                        setShowMenu(false);
+                        }}
+                  >
+                        Chỉ Mình Tôi
+                  </button>
+                  )}
+
+                  {post.loaiChiaSe === "Chỉ Mình Tôi" && (
+                  <button
+                        onClick={() => {
+                        handleForAll();
+                        setShowMenu(false);
+                        }}
+                  >
+                        Tất Cả
+                  </button>
+                  )}
               </div>
             )}
           </div>

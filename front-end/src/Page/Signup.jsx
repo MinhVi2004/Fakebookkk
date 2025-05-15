@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 
 import "./../CSS/Signup.css";
 import { validateFormsignup } from "../Other/ValidateInput";
-import { useNavigation } from "../Other/Navigation";
+import { useNavigation } from "../Other/navigation";
 function Signup() {
      const { goToSignin } = useNavigation();
      const [hoTen, setHoTen] = useState(""); // Khai báo state cho username

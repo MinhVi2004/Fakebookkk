@@ -243,5 +243,16 @@ public class TaiKhoanServiceImple implements TaiKhoanService {
                throw new RuntimeException("Loi khi luu file: " + e.getMessage());
           }
      }
-
+     @Override
+     public boolean updateMatKhau(Integer maTK, String newPassword) {
+      Optional<TaiKhoanEntity> optionalTaiKhoan = taiKhoanRepository.findById(maTK);
+            if (optionalTaiKhoan.isPresent()) {
+                  TaiKhoanEntity taiKhoan = optionalTaiKhoan.get();
+                  taiKhoan.setMatKhau(newPassword);
+                  taiKhoanRepository.save(taiKhoan);
+                  return true;
+            } else {
+                  throw new RuntimeException("Khong tim thay nguoi dung voi ID: " + maTK);
+            }
+     }
 }
