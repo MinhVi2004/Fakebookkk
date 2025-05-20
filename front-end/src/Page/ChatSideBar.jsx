@@ -2,30 +2,31 @@ import React, { useEffect, useState } from "react";
 import "../CSS/ChatSideBar.css"; // tạo file CSS nếu cần
 import axios from "axios";
 
-const ChatSidebar = ({ onSelectFriend, unreadCounts,visible, onToggle }) => {
+const ChatSidebar = ({ onSelectFriend, unreadCounts,visible, onToggle, refreshTrigger  }) => {
       const [friends, setFriends] = useState([]);
       const userSignin = JSON.parse(sessionStorage.getItem("userSignin"));
       const userId = userSignin.maTK;
       useEffect(() => {
-      const fetchFriends = async () => {
-            try {
-            const response = await axios.get(`http://localhost:8080/api/friends/list/details?userId=${userId}`);
-            console.log("Friends response:", response.data);
+        const fetchFriends = async () => {
+          try {
+            const response = await axios.get(
+              `http://localhost:8080/api/friends/list/details?userId=${userId}`
+            );
             setFriends(response.data);
-            } catch (error) {
+          } catch (error) {
             console.error("Error fetching friends:", error);
-            }
-      };
+          }
+        };
 
-      if (userId) {
-            fetchFriends();
-      }
-      }, [userId]);
+        if (userId) {
+          fetchFriends();
+        }
+      }, [userId, refreshTrigger]);
 
   return (
     <div className="chat-sidebar">
   <div className="chat-sidebar-header">
-    <span className="chat-title">Tin Nhắn</span>
+    <span className="chat-title">Bạn Bè</span>
     <button className="toggle-button" onClick={onToggle}>
       {visible ? '▼' : '▲'}
     </button>

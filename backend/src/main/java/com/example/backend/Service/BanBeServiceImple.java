@@ -1,37 +1,30 @@
 package com.example.backend.Service;
 
 import com.example.backend.DTO.BanBeDTO;
+import com.example.backend.DTO.Notification;
 import com.example.backend.Entity.BanBeEntity;
+import com.example.backend.Entity.TaiKhoanEntity;
 import com.example.backend.Mapper.BanBeMapper;
 import com.example.backend.Repository.BanBeRepository;
+import com.example.backend.Repository.TaiKhoanRepository;
+
 import lombok.AllArgsConstructor;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
 public class BanBeServiceImple implements BanBeService {
 
   private final BanBeRepository banBeRepository;
-
-  // Lấy danh sách bạn bè của người dùng
-  @Override
-  public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
-    return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Chấp Nhận", maTK1);
-  }
-
-  // Lấy danh sách yêu cầu kết bạn đang chờ được chấp nhận của người nhận
-  @Override
-  public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
-    return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", maTK2);
-  }
+  private final TaiKhoanRepository taiKhoanRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
   // Gửi yêu cầu kết bạn
   @Override
@@ -80,29 +73,36 @@ public class BanBeServiceImple implements BanBeService {
     banBeRepository.save(friendRequest);
   }
 
-  // Lấy danh sách bạn bè với thông tin chi tiết
+  // Chấp nhận yêu cầu kết bạn
   @Override
-  public List<Map<String, Object>> getFriendList(Integer userId) {
-    List<Object[]> results = banBeRepository.findAllFriends(userId);
+  public void acceptFriendRequest(Integer requestId) {
+    BanBeEntity request = banBeRepository.findById(requestId)
+        .orElseThrow(() -> new RuntimeException("Loi moi ket ban khong ton tai."));
 
-    // Chuyển đổi kết quả thành danh sách Map
-    return results.stream().map(row -> {
-      Map<String, Object> friendDetails = new HashMap<>();
-      friendDetails.put("maBB", row[0]); // ID của quan hệ bạn bè
-      friendDetails.put("friendId", row[1]); // ID của bạn bè
-      friendDetails.put("hoTen", row[2]); // Tên bạn bè
-      friendDetails.put("profilePic", row[3]); // Ảnh đại diện bạn bè
-      return friendDetails;
-    }).collect(Collectors.toList());
+    request.setTrangThaiBB("Đã Đồng Ý");
+    banBeRepository.save(request);
+    // / Gửi thông báo qua WebSocket cho người gửi lời mời (sender)
+      Integer senderId = request.getMaTK1();
+      TaiKhoanEntity sender = taiKhoanRepository.findById(senderId)
+          .orElseThrow(() -> new RuntimeException("Khong tim thay nguoi gui yeu cau ket ban."));
+      Integer receiverId = request.getMaTK2();
+      String message = sender.getHoTen() + " đã chấp nhận lời mời kết bạn !";
+      Notification notification = new Notification(message, receiverId);
+      messagingTemplate.convertAndSend("/topic/friend-accepted/" + senderId, notification);
   }
 
-  // Hủy yêu cầu kết bạn
+  // Từ chối yêu cầu kết bạn
+  @Override
+  public void rejectFriendRequest(Integer requestId) {
+    banBeRepository.deleteById(requestId);
+  }
+
+  // hủy yêu cầu kết bạn đã gửi từ người gửi
   @Override
   public void cancelFriendRequest(Integer senderId, Integer receiverId) {
     BanBeEntity friendRequest = banBeRepository.findByMaTK1AndMaTK2(senderId, receiverId)
         .orElseThrow(() -> new RuntimeException("Khong tim thay yeu cau ket ban."));
 
-    // Kiểm tra trạng thái hiện tại
     if (!friendRequest.getTrangThaiBB().equals("Chờ Chấp Nhận")) {
       throw new RuntimeException("Chi co the huy yeu cau ket ban khi trang thai la 'Cho Chap Nhan'.");
     }
@@ -110,14 +110,13 @@ public class BanBeServiceImple implements BanBeService {
     banBeRepository.delete(friendRequest);
   }
 
-  // Xóa bạn bè
+  // xóa bạn bè
   @Override
   public void removeFriend(Integer userId1, Integer userId2) {
     BanBeEntity relationship = banBeRepository.findByMaTK1AndMaTK2(userId1, userId2)
         .or(() -> banBeRepository.findByMaTK1AndMaTK2(userId2, userId1))
         .orElseThrow(() -> new RuntimeException("Khong tim thay moi quan he ban be."));
 
-    // Kiểm tra trạng thái hiện tại
     if (!relationship.getTrangThaiBB().equals("Đã Đồng Ý")) {
       throw new RuntimeException("Chi co the xoa bạn be khi hau nguoi da la ban be.");
     }
@@ -125,55 +124,90 @@ public class BanBeServiceImple implements BanBeService {
     banBeRepository.delete(relationship);
   }
 
-  // Lấy danh sách người dùng chưa kết bạn
+  // Lấy danh sách bạn bè của người dùng
   @Override
-  public List<Map<String, Object>> getSuggestedFriends(Integer userId) {
-    List<Object[]> results = banBeRepository.findSuggestedFriends(userId);
+  public List<Map<String, Object>> getFriendList(Integer userId) {
+    // Lấy tất cả bạn bè mà userId là người gửi hoặc người nhận
+    List<BanBeEntity> friends1 = banBeRepository.findByTrangThaiBBAndMaTK1("Đã Đồng Ý", userId);
+    List<BanBeEntity> friends2 = banBeRepository.findByTrangThaiBBAndMaTK2("Đã Đồng Ý", userId);
 
-    return results.stream().map(row -> {
-      Map<String, Object> suggestedFriend = new HashMap<>();
-      suggestedFriend.put("id", row[0]); // MaTK
-      suggestedFriend.put("name", row[1]); // HoTen
-      suggestedFriend.put("profilePic", row[2]); // ProfilePic
-      return suggestedFriend;
+    List<BanBeEntity> friends = new ArrayList<>();
+    friends.addAll(friends1);
+    friends.addAll(friends2);
+    // chuyển đổi danh sách bạn bè thành danh sách các Map
+    return friends.stream().map(banBe -> {
+      Map<String, Object> friendDetails = new HashMap<>();
+      friendDetails.put("maBB", banBe.getMaBB());
+
+      // Xác định bạn là MaTK_1 hay MaTK_2
+      boolean isUserMaTK1 = banBe.getMaTK1() == userId;
+      TaiKhoanEntity friendEntity = isUserMaTK1 ? banBe.getNguoiNhan() : banBe.getNguoiGui();
+
+      friendDetails.put("friendId", isUserMaTK1 ? banBe.getMaTK2() : banBe.getMaTK1());
+      friendDetails.put("hoTen", friendEntity != null ? friendEntity.getHoTen() : null);
+      friendDetails.put("profilePic", friendEntity != null ? friendEntity.getProfilePic() : null);
+      return friendDetails;
     }).collect(Collectors.toList());
   }
 
   // Lấy danh sách lời mời kết bạn với thông tin chi tiết
   @Override
   public List<Map<String, Object>> getFriendRequests(Integer userId) {
-    List<Object[]> results = banBeRepository.findFriendRequestsWithDetails(userId);
+    List<BanBeEntity> requests = banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", userId);
 
-    // Chuyển đổi dữ liệu thô thành danh sách Map
-    return results.stream().map(row -> {
+    return requests.stream().map(banBe -> {
       Map<String, Object> request = new HashMap<>();
-      request.put("maBB", row[0]); // ID của lời mời
-      request.put("maTK1", row[1]); // ID người gửi
-      request.put("maTK2", row[2]); // ID người nhận
-      request.put("trangThaiBB", row[3]); // Trạng thái
-      request.put("ngayTao", row[4]); // Ngày tạo
-      request.put("hoTen", row[5]); // Tên người gửi
-      request.put("profilePic", row[6]); // Ảnh đại diện người gửi
+      request.put("maBB", banBe.getMaBB());
+      request.put("maTK1", banBe.getMaTK1());
+      request.put("maTK2", banBe.getMaTK2());
+      request.put("trangThaiBB", banBe.getTrangThaiBB());
+      request.put("ngayTao", banBe.getNgayTao());
+      // Lấy thông tin người gửi
+      TaiKhoanEntity sender = banBe.getNguoiGui();
+      request.put("hoTen", sender != null ? sender.getHoTen() : null);
+      request.put("profilePic", sender != null ? sender.getProfilePic() : null);
       return request;
     }).collect(Collectors.toList());
   }
 
-  // Chấp nhận lời mời kết bạn
+  // Lấy danh sách gợi ý chưa kết bạn (chỉ trả về các BanBeEntity chưa có
+  // trạng thái Đã Đồng Ý)
   @Override
-  public void acceptFriendRequest(Integer requestId) {
-    // Tìm lời mời kết bạn theo ID
-    BanBeEntity request = banBeRepository.findById(requestId)
-        .orElseThrow(() -> new RuntimeException("Loi moi ket ban khong ton tai."));
+  public List<Map<String, Object>> getSuggestedFriends(Integer userId) {
+    List<String> trangThaiList = Arrays.asList("Đã Đồng Ý", "Chờ Chấp Nhận");
+    List<BanBeEntity> allRelations = banBeRepository
+        .findByTrangThaiBBInAndMaTK1OrTrangThaiBBInAndMaTK2(trangThaiList, userId, trangThaiList, userId);
 
-    // Cập nhật trạng thái lời mời kết bạn thành "Đã Đồng Ý"
-    request.setTrangThaiBB("Đã Đồng Ý");
-    banBeRepository.save(request);
+    Set<Integer> relatedIds = new HashSet<>();
+    for (BanBeEntity relation : allRelations) {
+      relatedIds.add(relation.getMaTK1());
+      relatedIds.add(relation.getMaTK2());
+    }
+    relatedIds.add(userId); // Không gợi ý chính mình
+
+    List<TaiKhoanEntity> allUsers = taiKhoanRepository.findAll();
+
+    return allUsers.stream()
+        .filter(user -> !relatedIds.contains(user.getMaTK()))
+        .map(user -> {
+          Map<String, Object> map = new HashMap<>();
+          map.put("id", user.getMaTK());
+          map.put("name", user.getHoTen());
+          map.put("profilePic", user.getProfilePic());
+          return map;
+        }).collect(Collectors.toList());
+  }
+  // Lấy danh sách yêu cầu kết bạn đang chờ từ người gửi
+  @Override
+  public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
+  return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Chấp Nhận", maTK1);
   }
 
-  // Từ chối lời mời kết bạn
+  // Lấy danh sách yêu cầu kết bạn đang chờ từ người nhận
   @Override
-  public void rejectFriendRequest(Integer requestId) {
-    banBeRepository.deleteById(requestId);
+  public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
+  return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", maTK2);
   }
+  // Hai hàm trên có thể sử dụng trong tương lai nếu cần thiết
 
 }

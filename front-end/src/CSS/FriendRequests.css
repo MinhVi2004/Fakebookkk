@@ -1,9 +1,9 @@
 .friend-requests-container {
   padding: 20px;
-  padding-right:280px ;
 }
 
 .friend-requests-list {
+  width: 75%;
   list-style: none;
   padding: 0;
 }

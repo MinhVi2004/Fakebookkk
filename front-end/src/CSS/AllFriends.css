@@ -1,9 +1,9 @@
 .all-friends-container {
   padding: 20px;
-  padding-right:280px ;
 }
 
 .friend-list {
+  width: 75%;
   list-style: none;
   padding: 0;
 }

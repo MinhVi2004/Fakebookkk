@@ -6,34 +6,34 @@ import PostForm from "./PostForm";
 import "../CSS/Post.css";
 import { toast } from "react-toastify";
 import confirm from "../Other/Confirm";
-import { useNavigation } from "./navigation" // Import useNavigation từ file navigation.js
+import { useNavigation } from "./navigation"; // Import useNavigation từ file navigation.js
 const Post = ({ post, onDelete = () => {} }) => {
-      const { goToProfileById } = useNavigation();
-      const [likes, setLikes] = useState(post.luotThichList?.length || 0);
-      const [hasLiked, setHasLiked] = useState(() => {
-      const user = JSON.parse(sessionStorage.getItem("userSignin"));
-      return post.luotThichList?.some((like) => like.maTK === user?.maTK);
-      });
-      const [comments, setComments] = useState(post.binhLuanList || []);
-      const [showComments, setShowComments] = useState(false);
-      const [showFullCaption, setShowFullCaption] = useState(false);
-      const [showMenu, setShowMenu] = useState(false);
-      const [showModal, setShowModal] = useState(false);
+  const { goToProfileById } = useNavigation();
+  const [likes, setLikes] = useState(post.luotThichList?.length || 0);
+  const [hasLiked, setHasLiked] = useState(() => {
+    const user = JSON.parse(sessionStorage.getItem("userSignin"));
+    return post.luotThichList?.some((like) => like.maTK === user?.maTK);
+  });
+  const [comments, setComments] = useState(post.binhLuanList || []);
+  const [showComments, setShowComments] = useState(false);
+  const [showFullCaption, setShowFullCaption] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
-      const maxPreview = 4;
-      const maxCaptionLength = 200;
-      const caption = post.noiDung || "";
-      const captionLength = caption.length;
+  const maxPreview = 4;
+  const maxCaptionLength = 200;
+  const caption = post.noiDung || "";
+  const captionLength = caption.length;
 
-      // Phân tách ảnh/video từ baiVietDinhKemResponseList
-      const images =
-      post.baiVietDinhKemResponseList
-            ?.filter((dk) => dk.loaiDK === "image")
-            ?.map((dk) =>
-            dk.fileData && dk.fileData.startsWith("data:image")
-            ? dk.fileData
-            : `data:image/jpeg;base64,${dk.fileData}`
-            ) || [];
+  // Phân tách ảnh/video từ baiVietDinhKemResponseList
+  const images =
+    post.baiVietDinhKemResponseList
+      ?.filter((dk) => dk.loaiDK === "image")
+      ?.map((dk) =>
+        dk.fileData && dk.fileData.startsWith("data:image")
+          ? dk.fileData
+          : `data:image/jpeg;base64,${dk.fileData}`
+      ) || [];
 
   const videos =
     post.baiVietDinhKemResponseList
@@ -60,71 +60,113 @@ const Post = ({ post, onDelete = () => {} }) => {
 
     if (confirmed) {
       try {
-            const response = await axios.delete(`http://localhost:8080/api/fakebook/posts/${post.maBV}`);
-            if (response.status === 200) {
-                  toast.success(response.data.message);
-                  console.log("onDelete:", onDelete);
-                  onDelete(post.maBV);
-            } else {
-                  toast.error(response.data.message || "Không thể xóa bài viết.");
-            }
+        const response = await axios.delete(
+          `http://localhost:8080/api/fakebook/posts/${post.maBV}`
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          console.log("onDelete:", onDelete);
+          onDelete(post.maBV);
+        } else {
+          toast.error(response.data.message || "Không thể xóa bài viết.");
+        }
       } catch (error) {
-            console.error("Có lỗi xảy ra khi xóa bài viết: ", error);
-            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+        console.error("Có lỗi xảy ra khi xóa bài viết: ", error);
+        toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
       }
-
     }
   };
-const handleOnlyme = async () => {
+  const handleOnlyme = async () => {
     // Hiển thị thông báo xác nhận trước khi xóa bài viết
     const confirmed = await confirm({
       title: "Cập nhật bài viết",
-      text: "Bạn có chắc chắn muốn chuyển bài viết thành chỉ mình tôi ?",
+      text: "Bạn có chắc chắn muốn chuyển kiểu chia sẻ thành chỉ mình tôi ?",
     });
 
     if (confirmed) {
       try {
-            const response = await axios.post(`http://localhost:8080/api/fakebook/posts/onlyme/${post.maBV}`);
-            if (response.status === 200) {
-                  toast.success(response.data.message);
-                  console.log("onDelete:", onDelete);
-                  onDelete(post.maBV);
-            } else {
-                  toast.error(response.data.message || "Không thể cập nhật trạng thái bài viết.");
-            }
+        const response = await axios.post(
+          `http://localhost:8080/api/fakebook/posts/onlyme/${post.maBV}`
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          console.log("onDelete:", onDelete);
+          onDelete(post.maBV);
+        } else {
+          toast.error(
+            response.data.message || "Không thể cập nhật trạng thái bài viết."
+          );
+        }
       } catch (error) {
-            console.error("Có lỗi xảy ra khi cập nhật trạng thái bài viết: ", error);
-            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+        console.error(
+          "Có lỗi xảy ra khi cập nhật trạng thái bài viết: ",
+          error
+        );
+        toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
       }
-
     }
   };
 
-const handleForAll = async () => {
+  const handleForAll = async () => {
     // Hiển thị thông báo xác nhận trước khi xóa bài viết
     const confirmed = await confirm({
       title: "Cập nhật bài viết",
-      text: "Bạn có chắc chắn muốn chuyển bài viết thành tất cả ?",
+      text: "Bạn có chắc chắn muốn chuyển kiểu chia sẻ thành tất cả ?",
     });
 
     if (confirmed) {
       try {
-            const response = await axios.post(`http://localhost:8080/api/fakebook/posts/all/${post.maBV}`);
-            if (response.status === 200) {
-                  toast.success(response.data.message);
-                  console.log("onDelete:", onDelete);
-                  onDelete(post.maBV);
-            } else {
-                  toast.error(response.data.message || "Không thể cập nhật trạng thái bài viết.");
-            }
+        const response = await axios.post(
+          `http://localhost:8080/api/fakebook/posts/all/${post.maBV}`
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          console.log("onDelete:", onDelete);
+          onDelete(post.maBV);
+        } else {
+          toast.error(
+            response.data.message || "Không thể cập nhật trạng thái bài viết."
+          );
+        }
       } catch (error) {
-            console.error("Có lỗi xảy ra khi cập nhật trạng thái bài viết: ", error);
-            toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+        console.error(
+          "Có lỗi xảy ra khi cập nhật trạng thái bài viết: ",
+          error
+        );
+        toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
       }
-
     }
   };
+  const handleForFriend = async () => {
+    // Hiển thị thông báo xác nhận trước khi xóa bài viết
+    const confirmed = await confirm({
+      title: "Cập nhật bài viết",
+      text: "Bạn có chắc chắn muốn chuyển kiểu chia sẻ thành bạn bè ?",
+    });
 
+    if (confirmed) {
+      try {
+        const response = await axios.post(
+          `http://localhost:8080/api/fakebook/posts/friend/${post.maBV}`
+        );
+        if (response.status === 200) {
+          toast.success(response.data.message);
+          console.log("onDelete:", onDelete);
+          onDelete(post.maBV);
+        } else {
+          toast.error(
+            response.data.message || "Không thể cập nhật trạng thái bài viết."
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Có lỗi xảy ra khi cập nhật trạng thái bài viết: ",
+          error
+        );
+        toast.error(error.response?.data?.message || "Đã xảy ra lỗi.");
+      }
+    }
+  };
 
   const toggleLike = async () => {
     if (!user) {
@@ -156,36 +198,36 @@ const handleForAll = async () => {
   return (
     <div className="post-card">
       <div className="post-header">
-      <div
-        className="post-author"
-        onClick={() => goToProfileById(post?.taiKhoanBVAndBL?.maTK)}
-      >
-        <img
-          src={`Resource/Avatar/${
-            post?.taiKhoanBVAndBL?.profilePic || "default.png"
-          }`}
-          alt=""
-          className="profile-pic"
-        />
-      </div>
-      <div className="d-flex flex-column align-items-start">
-        <span
+        <div
           className="post-author"
           onClick={() => goToProfileById(post?.taiKhoanBVAndBL?.maTK)}
         >
-          {post?.taiKhoanBVAndBL?.hoTen}
-        </span>
-        <span className="post-time">
-          {new Date(post?.thoiGian).toLocaleString("vi-VN", {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-          })}
-        </span>
-      </div>
+          <img
+            src={`Resource/Avatar/${
+              post?.taiKhoanBVAndBL?.profilePic || "default.png"
+            }`}
+            alt=""
+            className="profile-pic"
+          />
+        </div>
+        <div className="d-flex flex-column align-items-start">
+          <span
+            className="post-author"
+            onClick={() => goToProfileById(post?.taiKhoanBVAndBL?.maTK)}
+          >
+            {post?.taiKhoanBVAndBL?.hoTen}
+          </span>
+          <span className="post-time">
+            {new Date(post?.thoiGian).toLocaleString("vi-VN", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+            })}
+          </span>
+        </div>
         {/* Check if the current user is the author of the post */}
         {user?.maTK === post?.taiKhoanBVAndBL?.maTK && (
           <div className="ms-auto" style={{ position: "relative" }}>
@@ -199,33 +241,78 @@ const handleForAll = async () => {
               <div className="menu-dropdown">
                 <button
                   onClick={() => {
-                    handleDelete(); // Gọi hàm handleDelete thay vì trực tiếp gọi onDelete
+                    handleDelete();
                     setShowMenu(false);
                   }}
                 >
-                   Xoá
+                  Xoá
                 </button>
-                  {post.loaiChiaSe === "Tất Cả" && (
-                  <button
-                        onClick={() => {
+
+                {/* Nếu hiện tại là Tất Cả, hiển thị nút Bạn Bè + Chỉ Mình Tôi */}
+                {post.loaiChiaSe === "Tất Cả" && (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleForFriend();
+                        setShowMenu(false);
+                      }}
+                    >
+                      Bạn Bè
+                    </button>
+                    <button
+                      onClick={() => {
                         handleOnlyme();
                         setShowMenu(false);
-                        }}
-                  >
-                        Chỉ Mình Tôi
-                  </button>
-                  )}
+                      }}
+                    >
+                      Chỉ Mình Tôi
+                    </button>
+                  </>
+                )}
 
-                  {post.loaiChiaSe === "Chỉ Mình Tôi" && (
-                  <button
-                        onClick={() => {
+                {/* Nếu hiện tại là Bạn Bè, hiển thị nút Tất Cả + Chỉ Mình Tôi */}
+                {post.loaiChiaSe === "Bạn Bè" && (
+                  <>
+                    <button
+                      onClick={() => {
                         handleForAll();
                         setShowMenu(false);
-                        }}
-                  >
-                        Tất Cả
-                  </button>
-                  )}
+                      }}
+                    >
+                      Tất Cả
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleOnlyme();
+                        setShowMenu(false);
+                      }}
+                    >
+                      Chỉ Mình Tôi
+                    </button>
+                  </>
+                )}
+
+                {/* Nếu hiện tại là Chỉ Mình Tôi, hiển thị nút Tất Cả + Bạn Bè */}
+                {post.loaiChiaSe === "Chỉ Mình Tôi" && (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleForAll();
+                        setShowMenu(false);
+                      }}
+                    >
+                      Tất Cả
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleForFriend();
+                        setShowMenu(false);
+                      }}
+                    >
+                      Bạn Bè
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -8,7 +8,7 @@ import SearchBar from "../Other/SearchBar";
 import { useRequestContext } from "./RequestContext"; 
 
 const TopBar = () => {
-  const { requestCount } = useRequestContext(); // Access the request count from the context
+  const { requestCount, fetchRequestCount  } = useRequestContext(); // Access the request count from the context
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const userData = JSON.parse(sessionStorage.getItem("userSignin") || "{}");
   const role = userData.phanQuyen;
@@ -18,7 +18,9 @@ const TopBar = () => {
   const dropdownRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
+  useEffect(() => {
+    fetchRequestCount(); // 👈 GỌI API ngay khi TopBar mount
+  }, []);
   const handleClick = () => {
     navigate('/profile');
   };
@@ -59,7 +61,7 @@ const TopBar = () => {
         <Link to="/friends/suggested" className="category-button">Gợi ý kết bạn</Link>
         <Link to="/friends/requests" className="category-button">
           Lời mời kết bạn
-          {requestCount > 0 && <span className="badge">{requestCount}</span>}
+          {requestCount > 0 && <span className="friend-request-badge">{requestCount}</span>}
         </Link>
         {role === "Quản Trị Viên" && (
           <Link to="/admin" className="admin-button category-button">
