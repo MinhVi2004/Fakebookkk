@@ -13,50 +13,18 @@ import java.util.Optional;
 
 @Repository
 public interface BanBeRepository extends JpaRepository<BanBeEntity, Integer> {
-    List<BanBeEntity> findByTrangThaiBBAndMaTK1(String trangThai, int maTK1);
+        // Tìm danh sách bạn bè của người dùng dựa vào trạng thái
+        List<BanBeEntity> findByTrangThaiBBAndMaTK1(String trangThai, int maTK1);
 
-    List<BanBeEntity> findByTrangThaiBBAndMaTK2(String trangThai, int maTK2);
+        List<BanBeEntity> findByTrangThaiBBAndMaTK2(String trangThai, int maTK2);
 
-    // Kiểm tra xem quan hệ bạn bè có tồn tại không
-    boolean existsByMaTK1AndMaTK2(Integer maTK1, Integer maTK2);
+        // Kiểm tra xem quan hệ bạn bè có tồn tại không
+        // boolean existsByMaTK1AndMaTK2(Integer maTK1, Integer maTK2);
 
-    // lấy danh sách người dùng có userID là người gửi lời mời kết bạn,
-    // để hiện thị thông tin trong lời mời kết bạn
-    @Query(value = "SELECT b.MaBB, b.MaTK_1, b.MaTK_2, b.TrangThaiBB, b.NgayTao, t.HoTen, t.ProfilePic " +
-            "FROM banbe b " +
-            "JOIN taikhoan t ON b.MaTK_2 = t.MaTK " +
-            "WHERE b.MaTK_1 = :userId AND b.TrangThaiBB = 'Đã Đồng Ý'", nativeQuery = true)
-    List<Object[]> findFriendsWithDetails(@Param("userId") Integer userId);
+        // Tìm quan hệ bạn bè giữa hai người dùng
+        Optional<BanBeEntity> findByMaTK1AndMaTK2(Integer maTK1, Integer maTK2);
 
-    // lấy danh sách người dùng chưa kết bạn
-
-    @Query("SELECT t.MaTK, t.hoTen, t.profilePic " +
-            "FROM TaiKhoanEntity t " +
-            "WHERE t.MaTK NOT IN ( " +
-            "    SELECT CASE WHEN b.maTK1 = :userId THEN b.maTK2 ELSE b.maTK1 END " +
-            "    FROM BanBeEntity b " +
-            "    WHERE b.maTK1 = :userId OR b.maTK2 = :userId " +
-            ") AND t.MaTK != :userId")
-    List<Object[]> findSuggestedFriends(@Param("userId") Integer userId);
-
-    // Lấy danh sách yêu cầu kết bạn chưa được chấp nhận
-    @Query(value = "SELECT b.MaBB, b.MaTK_1, b.MaTK_2, b.TrangThaiBB, b.NgayTao, t.HoTen, t.ProfilePic " +
-            "FROM banbe b " +
-            "JOIN taikhoan t ON b.MaTK_1 = t.MaTK " +
-            "WHERE b.MaTK_2 = :userId AND b.TrangThaiBB = 'Chờ Chấp Nhận'", nativeQuery = true)
-    List<Object[]> findFriendRequestsWithDetails(@Param("userId") Integer userId);
-
-    // Lấy danh sách bạn bè của người dùng
-    @Query(value = "SELECT b.MaBB, " +
-            "       CASE WHEN b.MaTK_1 = :userId THEN b.MaTK_2 ELSE b.MaTK_1 END AS friendId, " +
-            "       t.HoTen, " +
-            "       t.ProfilePic " +
-            "FROM banbe b " +
-            "JOIN taikhoan t ON t.MaTK = (CASE WHEN b.MaTK_1 = :userId THEN b.MaTK_2 ELSE b.MaTK_1 END) " +
-            "WHERE (b.MaTK_1 = :userId OR b.MaTK_2 = :userId) " +
-            "  AND b.TrangThaiBB = 'Đã Đồng Ý'", nativeQuery = true)
-    List<Object[]> findAllFriends(@Param("userId") Integer userId);
-
-    // Tìm quan hệ bạn bè giữa hai người dùng
-    Optional<BanBeEntity> findByMaTK1AndMaTK2(Integer maTK1, Integer maTK2);
+        // Tìm danh sách yêu cầu kết bạn đang chờ từ người gửi
+        List<BanBeEntity> findByTrangThaiBBInAndMaTK1OrTrangThaiBBInAndMaTK2(
+                        List<String> trangThai1, int maTK1, List<String> trangThai2, int maTK2);
 }

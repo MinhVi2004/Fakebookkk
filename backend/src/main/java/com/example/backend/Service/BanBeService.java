@@ -23,8 +23,8 @@ public interface BanBeService {
 
   void rejectFriendRequest(Integer requestId);
 
-  List<BanBeEntity> getPendingRequestsBySender(int maTK1);
+  // List<BanBeEntity> getPendingRequestsBySender(int maTK1);
 
-  List<BanBeEntity> getPendingRequestsByReceiver(int maTK2);
+  // List<BanBeEntity> getPendingRequestsByReceiver(int maTK2);
 
 }
