@@ -26,5 +26,14 @@ public class BanBeEntity {
 
     @Column(name = "NgayTao")
     private String ngayTao;
+    // ...existing code...
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MaTK_1", insertable = false, updatable = false)
+    private TaiKhoanEntity nguoiGui; // Người gửi lời mời
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "MaTK_2", insertable = false, updatable = false)
+    private TaiKhoanEntity nguoiNhan; // Người nhận lời mời
+    // ...existing code...
 
 }
