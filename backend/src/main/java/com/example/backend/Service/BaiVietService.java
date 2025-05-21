@@ -14,10 +14,12 @@ public interface BaiVietService {
     BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> dinhKems, List<String> loaiDKs);
     boolean changeStatusBaiViet(int maBV, String trangThai);
     boolean changLoaiChiaSeBaiViet(int maBV, String loaiChiaSe);
-      BaiVietDTO updateBaiViet(BaiVietDTO baiVietDTO);
-      List<BaiVietDTO> getBaiVietByMaTK(int maTK);
-      List<BaiVietDTO> getBaiVietByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe);
-      List<BaiVietDTO> getBaiVietByMaTKAndTrangThai(int maTK, String trangThai);
-      List<BaiVietDTO> getBaiVietByTrangThai(String trangThai);
-      boolean deleteBaiViet(int maBV);
+    BaiVietDTO updateBaiViet(BaiVietDTO baiVietDTO);
+    List<BaiVietDTO> getBaiVietByMaTK(int maTK);
+    List<BaiVietDTO> getBaiVietByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe);
+    List<BaiVietDTO> getBaiVietByMaTKAndTrangThai(int maTK, String trangThai);
+    List<BaiVietDTO> getBaiVietByTrangThai(String trangThai);
+    boolean deleteBaiViet(int maBV);
+
+    List<BaiVietDTO> findAllVisiblePosts(int currentUserId);
 }

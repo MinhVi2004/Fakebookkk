@@ -4,7 +4,7 @@ import "./../CSS/FriendRequests.css";
 import { useNavigation } from "../Other/navigation"; 
 import { useRequestContext } from "./RequestContext"; 
 
-function FriendRequests() {
+function FriendRequests({ onRefreshFriends }) {
   const { updateRequestCount } = useRequestContext();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +68,9 @@ function FriendRequests() {
           setRequests((prev) => prev.filter((req) => req.maBB !== requestId));
           updateRequestCount(requests.length - 1);
           fetchFriends();
+          if (onRefreshFriends) {
+            onRefreshFriends();
+          }
         } else {
           toast.error("Không thể chấp nhận lời mời kết bạn.");
         }
