@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../CSS/ChatSideBar.css"; // tạo file CSS nếu cần
 import axios from "axios";
+import ChatBot from "./ChatBot";
 
 const ChatSidebar = ({ onSelectFriend, unreadCounts,visible, onToggle, refreshTrigger  }) => {
       const [friends, setFriends] = useState([]);
@@ -33,6 +34,9 @@ const ChatSidebar = ({ onSelectFriend, unreadCounts,visible, onToggle, refreshTr
   </div>
 
   <ul className={`chat-sidebar-content ${visible ? 'visible' : 'hidden'}`}>
+    <li className="friend-item">
+      <ChatBot/>
+    </li>
     {friends.map((friend) => (
       <li className="friend-item" key={friend.friendId} onClick={() => onSelectFriend(friend)}>
         <img src={`../Resource/Avatar/${friend.profilePic}`} alt="avatar" className="profile-pic"/>

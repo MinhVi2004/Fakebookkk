@@ -16,6 +16,9 @@ public class ChatMessage {
     private Integer nguoiGuiId;
     private Integer nguoiNhanId;
     private String noiDung;
-    private String timestamp; 
+    private String timestamp;
+    private String sender;
+    private String content;
+    private String type; 
 }
 

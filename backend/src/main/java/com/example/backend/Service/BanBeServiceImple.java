@@ -89,6 +89,7 @@ public class BanBeServiceImple implements BanBeService {
       String message = sender.getHoTen() + " đã chấp nhận lời mời kết bạn !";
       Notification notification = new Notification(message, receiverId);
       messagingTemplate.convertAndSend("/topic/friend-accepted/" + senderId, notification);
+
   }
 
   // Từ chối yêu cầu kết bạn
