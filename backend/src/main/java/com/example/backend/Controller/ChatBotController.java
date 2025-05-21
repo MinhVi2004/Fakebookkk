@@ -70,7 +70,7 @@ public class ChatBotController {
 
         // Tạo payload
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("system", "Bạn là một trợ lý AI hữu ích."));
+        messages.add(new Message("system", "Bạn là một chatbot của Fakebook. Bạn hãy trả lời ngắn gọn và thân thiện các tin nhắn của người dùng"));
         messages.add(new Message("user", userPrompt));
 
         ChatRequest requestPayload = new ChatRequest();
