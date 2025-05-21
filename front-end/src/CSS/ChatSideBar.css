@@ -60,8 +60,8 @@
 }
 
 .chat-sidebar-content.visible {
-  max-height: 800px;
-  min-height: 600px;
+  max-height: 600px;
+  min-height: 500px;
   transform: scaleY(1);
   opacity: 1;
 }
