@@ -22,16 +22,36 @@ import FriendRequests from "./Page/FriendRequests";
 import FriendSuggestions from "./Page/FriendSuggestions";
 import ChatSidebar from "./Page/ChatSideBar";
 import ChatWindow from "./Page/ChatWindow"; // đổi lại đúng tên file
+import { connectNotification, disconnectNotification } from './Page/WebSocketService';
 
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 const AppContent = () => {
-
-      const [showSidebar, setShowSidebar] = useState(true); // 👈 thêm dòng này
+      const [refreshSidebar, setRefreshSidebar] = useState(false);
+      const [showSidebar, setShowSidebar] = useState(true); // 👈 thêm dòng này 
       const userSignin = JSON.parse(sessionStorage.getItem("userSignin"));
       const [selectedFriend, setSelectedFriend] = useState(null);
       const [unreadCounts, setUnreadCounts] = useState({});
       const [stompClient, setStompClient] = useState(null);
+      const triggerSidebarRefresh = () => {
+        setRefreshSidebar(prev => !prev); // Toggle để useEffect chạy lại
+      };
+      useEffect(() => {
+        if (!userSignin) return;
+
+        const handleNotification = (notification) => {
+          toast.success(notification.message); // Hiện thông báo
+          triggerSidebarRefresh(); // Cập nhật sidebar nếu cần
+        };
+
+        connectNotification(userSignin.maTK, handleNotification);
+
+        return () => {
+          disconnectNotification();
+        };
+      }, [userSignin]);
+
+
 
       useEffect(() => {
            const socket = new SockJS("http://localhost:8080/ws");
@@ -95,6 +115,7 @@ const AppContent = () => {
             unreadCounts={unreadCounts}
             visible={showSidebar}
             onToggle={() => setShowSidebar((prev) => !prev)}
+            refreshTrigger={refreshSidebar}
       />
 
       <div className="flex flex-col flex-grow">
@@ -107,10 +128,10 @@ const AppContent = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/friends/all" element={<AllFriends />} />
               <Route path="/friends/suggested" element={<FriendSuggestions />} />
-              <Route path="/friends/requests" element={<FriendRequests />} />
+              <Route path="/friends/requests" element={<FriendRequests onRefreshFriends={triggerSidebarRefresh}/>} />
               <Route path="/admin" element={<Admin />}>
                 <Route path="" element={<UserManager />} />
-                <Route path="users" element={<UserManager />} />
+                <Route path="users" element={<UserManager />} />  
                 <Route path="posts" element={<PostManager />} />
               </Route>
             </Routes>
@@ -135,7 +156,7 @@ const AppContent = () => {
 function App() {
   return (
     <RequestProvider> {/* Wrap the app content with RequestProvider */}
-      <Router> {/* Wrap your entire app with Router */}
+        <Router> {/* Wrap your entire app with Router */}
         <ToastContainer position="top-center" /> {/* Đây là nơi để toast hiện */}
         <AppContent />
       </Router>

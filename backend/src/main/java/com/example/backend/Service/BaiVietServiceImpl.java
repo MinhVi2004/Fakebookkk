@@ -196,6 +196,12 @@ public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> 
         return false;
     }
     
-
+    @Override
+    public List<BaiVietDTO> findAllVisiblePosts(int currentUserId) {
+        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllVisiblePosts(currentUserId);
+        return baiVietEntities.stream()
+                .map(BaiVietMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
 }

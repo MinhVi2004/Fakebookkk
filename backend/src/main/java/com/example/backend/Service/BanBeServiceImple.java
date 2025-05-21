@@ -1,6 +1,7 @@
 package com.example.backend.Service;
 
 import com.example.backend.DTO.BanBeDTO;
+import com.example.backend.DTO.Notification;
 import com.example.backend.Entity.BanBeEntity;
 import com.example.backend.Entity.TaiKhoanEntity;
 import com.example.backend.Mapper.BanBeMapper;
@@ -8,6 +9,8 @@ import com.example.backend.Repository.BanBeRepository;
 import com.example.backend.Repository.TaiKhoanRepository;
 
 import lombok.AllArgsConstructor;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ public class BanBeServiceImple implements BanBeService {
 
   private final BanBeRepository banBeRepository;
   private final TaiKhoanRepository taiKhoanRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
   // Gửi yêu cầu kết bạn
   @Override
@@ -77,6 +81,15 @@ public class BanBeServiceImple implements BanBeService {
 
     request.setTrangThaiBB("Đã Đồng Ý");
     banBeRepository.save(request);
+    // / Gửi thông báo qua WebSocket cho người gửi lời mời (sender)
+      Integer senderId = request.getMaTK1();
+      TaiKhoanEntity sender = taiKhoanRepository.findById(senderId)
+          .orElseThrow(() -> new RuntimeException("Khong tim thay nguoi gui yeu cau ket ban."));
+      Integer receiverId = request.getMaTK2();
+      String message = sender.getHoTen() + " đã chấp nhận lời mời kết bạn !";
+      Notification notification = new Notification(message, receiverId);
+      messagingTemplate.convertAndSend("/topic/friend-accepted/" + senderId, notification);
+
   }
 
   // Từ chối yêu cầu kết bạn
@@ -186,16 +199,16 @@ public class BanBeServiceImple implements BanBeService {
         }).collect(Collectors.toList());
   }
   // Lấy danh sách yêu cầu kết bạn đang chờ từ người gửi
-  // @Override
-  // public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
-  // return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Chấp Nhận", maTK1);
-  // }
+  @Override
+  public List<BanBeEntity> getPendingRequestsBySender(int maTK1) {
+  return banBeRepository.findByTrangThaiBBAndMaTK1("Chờ Chấp Nhận", maTK1);
+  }
 
-  // // Lấy danh sách yêu cầu kết bạn đang chờ từ người nhận
-  // @Override
-  // public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
-  // return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", maTK2);
-  // }
+  // Lấy danh sách yêu cầu kết bạn đang chờ từ người nhận
+  @Override
+  public List<BanBeEntity> getPendingRequestsByReceiver(int maTK2) {
+  return banBeRepository.findByTrangThaiBBAndMaTK2("Chờ Chấp Nhận", maTK2);
+  }
   // Hai hàm trên có thể sử dụng trong tương lai nếu cần thiết
 
 }

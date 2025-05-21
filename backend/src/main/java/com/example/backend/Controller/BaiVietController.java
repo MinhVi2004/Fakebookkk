@@ -75,13 +75,13 @@ public class BaiVietController {
 
     @GetMapping("/home/{maTK}")
     public ResponseEntity<?> getAllPost(@PathVariable int maTK) {
-        List<BaiVietDTO> baiVietList = baiVietService.findAllByOrderByThoiGianDesc();
+        List<BaiVietDTO> baiVietList = baiVietService.findAllVisiblePosts(maTK);
         List<BaiVietResponseDTO> baiVietResponseList = new ArrayList<BaiVietResponseDTO>();
 
         for (BaiVietDTO baiVietDTO : baiVietList) {
             TaiKhoanDTO taiKhoanDTO = taiKhoanService.getTaiKhoanById(baiVietDTO.getMaTK());
 
-            if (baiVietDTO.getTrangThai().equals("Bình Thường") && !baiVietDTO.getLoaiChiaSe().equals("Chỉ Mình Tôi")) {
+            if (baiVietDTO.getTrangThai().equals("Bình Thường")) {
                 BaiVietResponseDTO baiVietResponseDTO = new BaiVietResponseDTO();
 
                 // Lấy danh sách file đính kèm
@@ -459,5 +459,26 @@ public class BaiVietController {
                         .body(Map.of("message", "Đã xảy ra lỗi khi chuyển thành tất Cả"));
             }
       }
+    @PostMapping("/friend/{maBV}")
+      public ResponseEntity<?> updateBanBe(@PathVariable int maBV) {
+            try {
+                  BaiVietDTO baiVietDTO = baiVietService.getBaiVietById(maBV);
+                  if (baiVietDTO == null) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                              .body(Map.of("message", "Bài viết không tồn tại"));
+                  }
 
+                  boolean deleted = baiVietService.changLoaiChiaSeBaiViet(maBV, "Bạn Bè");
+                  if (deleted) {
+                        return ResponseEntity.ok(Map.of("message", "Bài viết đã được chuyển thành bạn bè"));
+                  } else {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                              .body(Map.of("message", "Không thể chuyển thành bạn bè"));
+                  }
+            } catch (Exception e) {
+                  e.printStackTrace();
+                  return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "Đã xảy ra lỗi khi chuyển thành bạn bè"));
+            }
+      }
 }
