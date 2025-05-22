@@ -1,0 +1,74 @@
+.friend-requests-container {
+  padding: 20px;
+}
+
+.friend-requests-list {
+  width: 75%;
+  list-style: none;
+  padding: 0;
+}
+
+.friend-request-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f2f4f7;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.friend-request-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.friend-request-info {
+  flex: 1;
+  margin-left: 15px;
+}
+
+.friend-request-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.friend-request-time {
+  font-size: 14px;
+  color: #606162;
+}
+
+.friend-request-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.accept-button {
+  background-color: #1877f2;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reject-button {
+  background-color: #3a3b3c;
+  color: #ffffff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.accept-button:hover {
+  background-color: #145dbf;
+}
+
+.reject-button:hover {
+  background-color: #4a4b4c;
+}

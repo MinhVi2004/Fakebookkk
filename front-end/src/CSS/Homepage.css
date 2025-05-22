@@ -1,0 +1,10 @@
+.home-page {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .home-container {
+    max-width: 600px;
+    width: 100%;
+    padding: 16px;
+  }
