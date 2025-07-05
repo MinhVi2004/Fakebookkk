@@ -1,207 +1,171 @@
-package com.example.backend.Service;
-
-import com.example.backend.DTO.BaiVietDTO;
-import com.example.backend.DTO.BaiVietDinhKemDTO;
-import com.example.backend.Entity.BaiVietDinhKemEntity;
-import com.example.backend.Entity.BaiVietEntity;
-import com.example.backend.Mapper.BaiVietDinhKemMapper;
-import com.example.backend.Mapper.BaiVietMapper;
-import com.example.backend.Repository.BaiVietDinhKemRepository;
-import com.example.backend.Repository.BaiVietRepository;
-
-import lombok.AllArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Service
 @AllArgsConstructor
 public class BaiVietServiceImpl implements BaiVietService {
 
-    private BaiVietRepository baiVietRepository;
-    private BaiVietDinhKemService baiVietDinhKemService;
-    private FileService fileService;
+    private final BaiVietRepository baiVietRepository;
+    private final BaiVietDinhKemService baiVietDinhKemService;
+    private final FileService fileService;
 
     @Override
     public BaiVietDTO getBaiVietById(int maBV) {
-        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(maBV);
-        return baiVietEntityOptional.map(BaiVietMapper::toDTO).orElse(null);
+        return baiVietRepository.findById(maBV)
+                .map(BaiVietMapper::toDTO)
+                .orElse(null);
     }
 
     @Override
     public List<BaiVietDTO> getAllBaiViet() {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAll();
-        return baiVietEntities.stream()
+        return baiVietRepository.findAll()
+                .stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public BaiVietDTO createBaiViet(BaiVietDTO baiVietDTO) {
-        // Gán các giá trị mặc định
-        baiVietDTO.setThoiGian(java.time.LocalDateTime.now().toString());
+        baiVietDTO.setThoiGian(LocalDateTime.now().toString());
         baiVietDTO.setTrangThai("Bình Thường");
 
         BaiVietEntity baiVietEntity = BaiVietMapper.toEntity(baiVietDTO);
-        BaiVietEntity savedBaiVietEntity = baiVietRepository.save(baiVietEntity);
-        return BaiVietMapper.toDTO(savedBaiVietEntity);
+        BaiVietEntity saved = baiVietRepository.save(baiVietEntity);
+        return BaiVietMapper.toDTO(saved);
     }
 
     @Override
-public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> dinhKems, List<String> loaiDKs) {
-    // Gán giá trị mặc định
-    baiVietDTO.setThoiGian(LocalDateTime.now().toString());
-    baiVietDTO.setTrangThai("Bình Thường");
+    public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> dinhKemsBase64, List<String> loaiDKs) {
+        baiVietDTO.setThoiGian(LocalDateTime.now().toString());
+        baiVietDTO.setTrangThai("Bình Thường");
 
-    // Lưu bài viết
-    BaiVietEntity baiVietEntity = BaiVietMapper.toEntity(baiVietDTO);
-    BaiVietEntity savedBaiVietEntity = baiVietRepository.save(baiVietEntity);
+        BaiVietEntity baiVietEntity = BaiVietMapper.toEntity(baiVietDTO);
+        BaiVietEntity savedBaiViet = baiVietRepository.save(baiVietEntity);
 
-    // Lưu đính kèm (nếu có)
-    if (dinhKems != null && !dinhKems.isEmpty()) {
-        for (int i = 0; i < dinhKems.size(); i++) {
-            try {
-                String base64 = dinhKems.get(i); // Đã là base64 thuần
-                String type = (loaiDKs != null && loaiDKs.size() > i) ? loaiDKs.get(i) : "unknown";
+        if (dinhKemsBase64 != null && !dinhKemsBase64.isEmpty()) {
+            for (int i = 0; i < dinhKemsBase64.size(); i++) {
+                try {
+                    String rawBase64 = dinhKemsBase64.get(i);
+                    String base64Content = rawBase64.contains(",") ? rawBase64.split(",")[1] : rawBase64;
+                    String type = (loaiDKs != null && loaiDKs.size() > i) ? loaiDKs.get(i) : "unknown";
 
-                String fileName = fileService.saveFile("DinhKem", base64);
+                    // Lưu file và nhận tên file
+                    String fileName = fileService.saveFile("DinhKem", base64Content);
 
-                BaiVietDinhKemDTO dinhKem = new BaiVietDinhKemDTO();
-                dinhKem.setMaBV(savedBaiVietEntity.getMaBV());
-                dinhKem.setLinkDK(fileName);
-                dinhKem.setLoaiDK(type);
-                baiVietDinhKemService.createBaiVietDinhKem(dinhKem);
+                    BaiVietDinhKemDTO dinhKemDTO = new BaiVietDinhKemDTO();
+                    dinhKemDTO.setMaBV(savedBaiViet.getMaBV());
+                    dinhKemDTO.setLinkDK(fileName);
+                    dinhKemDTO.setLoaiDK(type);
 
-            } catch (IOException | IllegalArgumentException e) {
-                throw new RuntimeException("Không thể xử lý file đính kèm: ", e);
+                    baiVietDinhKemService.createBaiVietDinhKem(dinhKemDTO);
+
+                } catch (IOException | IllegalArgumentException e) {
+                    throw new RuntimeException("Không thể xử lý file đính kèm: ", e);
+                }
             }
         }
+
+        return BaiVietMapper.toDTO(savedBaiViet);
     }
-
-    return BaiVietMapper.toDTO(savedBaiVietEntity);
-}
-
 
     @Override
     public BaiVietDTO updateBaiViet(BaiVietDTO baiVietDTO) {
-        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(baiVietDTO.getMaBV());
-        if (baiVietEntityOptional.isPresent()) {
-            BaiVietEntity baiVietEntity = baiVietEntityOptional.get();
-            baiVietEntity.setLoaiChiaSe(baiVietDTO.getLoaiChiaSe());
-            baiVietEntity.setThoiGian(baiVietDTO.getThoiGian());
-            baiVietEntity.setNoiDung(baiVietDTO.getNoiDung());
-            baiVietEntity.setTrangThai(baiVietDTO.getTrangThai());
-            // Cập nhật các trường khác nếu cần thiết
-
-            BaiVietEntity updatedBaiVietEntity = baiVietRepository.save(baiVietEntity);
-            return BaiVietMapper.toDTO(updatedBaiVietEntity);
-        }
-        return null;
+        return baiVietRepository.findById(baiVietDTO.getMaBV())
+                .map(entity -> {
+                    entity.setLoaiChiaSe(baiVietDTO.getLoaiChiaSe());
+                    entity.setThoiGian(baiVietDTO.getThoiGian());
+                    entity.setNoiDung(baiVietDTO.getNoiDung());
+                    entity.setTrangThai(baiVietDTO.getTrangThai());
+                    return BaiVietMapper.toDTO(baiVietRepository.save(entity));
+                }).orElse(null);
     }
 
     @Override
     public boolean changeStatusBaiViet(int maBV, String trangThai) {
-        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(maBV);
-        if (baiVietEntityOptional.isPresent()) {
-            BaiVietEntity baiVietEntity = baiVietEntityOptional.get();
-            baiVietEntity.setTrangThai(trangThai);
-            baiVietRepository.save(baiVietEntity);
+        return baiVietRepository.findById(maBV).map(entity -> {
+            entity.setTrangThai(trangThai);
+            baiVietRepository.save(entity);
             return true;
-        }
-        return false;
+        }).orElse(false);
     }
-@Override
+
+    @Override
     public boolean changLoaiChiaSeBaiViet(int maBV, String loaiChiaSe) {
-        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(maBV);
-        if (baiVietEntityOptional.isPresent()) {
-            BaiVietEntity baiVietEntity = baiVietEntityOptional.get();
-            baiVietEntity.setLoaiChiaSe(loaiChiaSe);
-            baiVietRepository.save(baiVietEntity);
+        return baiVietRepository.findById(maBV).map(entity -> {
+            entity.setLoaiChiaSe(loaiChiaSe);
+            baiVietRepository.save(entity);
             return true;
-        }
-        return false;
+        }).orElse(false);
     }
+
     @Override
     public List<BaiVietDTO> getBaiVietByMaTK(int maTK) {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findByMaTK(maTK);
-        return baiVietEntities.stream()
+        return baiVietRepository.findByMaTK(maTK)
+                .stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BaiVietDTO> getBaiVietByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe) {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findByMaTKAndLoaiChiaSe(maTK, loaiChiaSe);
-        return baiVietEntities.stream()
+        return baiVietRepository.findByMaTKAndLoaiChiaSe(maTK, loaiChiaSe)
+                .stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BaiVietDTO> getBaiVietByMaTKAndTrangThai(int maTK, String trangThai) {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findByMaTKAndTrangThai(maTK, trangThai);
-        return baiVietEntities.stream()
+        return baiVietRepository.findByMaTKAndTrangThai(maTK, trangThai)
+                .stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BaiVietDTO> getBaiVietByTrangThai(String trangThai) {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findByTrangThai(trangThai);
-        return baiVietEntities.stream()
+        return baiVietRepository.findByTrangThai(trangThai)
+                .stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<BaiVietDTO> findAllByOrderByThoiGianDesc() {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllByOrderByThoiGianDesc();
-        return baiVietEntities.stream()
-                .map(BaiVietMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-    @Override
-    @Transactional
-    public boolean deleteBaiViet(int maBV) {
-        Optional<BaiVietEntity> baiVietEntityOptional = baiVietRepository.findById(maBV);
-        if (baiVietEntityOptional.isPresent()) {
-            BaiVietEntity baiVietEntity = baiVietEntityOptional.get();
-    
-            // Đổi trạng thái thành "DaXoa"
-            baiVietEntity.setTrangThai("Đã Xóa");
-            baiVietRepository.save(baiVietEntity);
-    
-            // Nếu muốn xóa file vật lý đính kèm
-            List<BaiVietDinhKemDTO> dinhKemsDTO = baiVietDinhKemService.getAllBaiVietDinhKemByMaBV(maBV);
-            for (BaiVietDinhKemDTO dto : dinhKemsDTO) {
-                String filePath = dto.getLinkDK();
-                File file = new File(filePath);
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
-    
-            return true;
-        }
-        return false;
-    }
-    
-    @Override
-    public List<BaiVietDTO> findAllVisiblePosts(int currentUserId) {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllVisiblePosts(currentUserId);
-        return baiVietEntities.stream()
+        return baiVietRepository.findAllByOrderByThoiGianDesc()
+                .stream()
                 .map(BaiVietMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional
+    public boolean deleteBaiViet(int maBV) {
+        Optional<BaiVietEntity> opt = baiVietRepository.findById(maBV);
+        if (opt.isPresent()) {
+            BaiVietEntity baiVietEntity = opt.get();
+
+            // Đổi trạng thái thành "Đã Xóa"
+            baiVietEntity.setTrangThai("Đã Xóa");
+            baiVietRepository.save(baiVietEntity);
+
+            // Xóa file vật lý đính kèm nếu có
+            List<BaiVietDinhKemDTO> dinhKems = baiVietDinhKemService.getAllBaiVietDinhKemByMaBV(maBV);
+            for (BaiVietDinhKemDTO dto : dinhKems) {
+                try {
+                    fileService.deleteFile("DinhKem", dto.getLinkDK());
+                } catch (Exception ignored) {
+                    // Log lỗi nếu cần
+                }
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<BaiVietDTO> findAllVisiblePosts(int currentUserId) {
+        return baiVietRepository.findAllVisiblePosts(currentUserId)
+                .stream()
+                .map(BaiVietMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }
