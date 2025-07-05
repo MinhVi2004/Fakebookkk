@@ -1,12 +1,13 @@
-# syntax=docker/dockerfile:1
+# Use Java 17
 FROM eclipse-temurin:17-jdk-alpine
+
 WORKDIR /app
 
-# Copy everything
+# Copy everything into image
 COPY . .
 
-# Build project
-RUN ./mvnw clean install
+# Build Spring Boot project using Maven Wrapper
+RUN ./mvnw clean package -DskipTests
 
-# Run the jar file
-CMD ["java", "-jar", "target/*.jar"]
+# Run the built JAR file (change the name if yours is different)
+CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
