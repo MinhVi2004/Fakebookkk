@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Post from "../Other/Post";
 import PostForm from "../Other/PostForm";
-import "../CSS/HomePage.css";
+import "../CSS/Homepage.css";
 import { useNavigation } from "../Other/navigation"; // Import useNavigation từ file navigation.js
 import { toast } from "react-toastify";
 
