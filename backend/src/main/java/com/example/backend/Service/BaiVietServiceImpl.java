@@ -2,6 +2,7 @@ package com.example.backend.Service;
 
 import com.example.backend.DTO.BaiVietDTO;
 import com.example.backend.DTO.BaiVietDinhKemDTO;
+import com.example.backend.Repository.BaiVietRepository;
 import com.example.backend.Entity.BaiVietEntity;
 import com.example.backend.Mapper.BaiVietMapper;
 import lombok.AllArgsConstructor;
