@@ -1,7 +1,8 @@
 package com.example.backend.Repository;
 
-import com.example.backend.DTO.TaiKhoanDTO;
 import com.example.backend.Entity.BaiVietEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,14 +10,18 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface BaiVietRepository extends JpaRepository<BaiVietEntity, Integer> {
-    List<BaiVietEntity> findAllByOrderByThoiGianDesc();
-    List<BaiVietEntity> findByMaTK(int maTK);  // Tìm bài viết theo mã tài khoản
-    List<BaiVietEntity> findByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe);
-    List<BaiVietEntity> findByMaTKAndTrangThai(int maTK, String trangThai);
-    List<BaiVietEntity> findByTrangThai(String trangThai);
-    TaiKhoanDTO findUserByMaBV(int maBV);
-    void deleteByMaBV(int maBV);
 
+    Page<BaiVietEntity> findAllByOrderByThoiGianDesc(Pageable pageable);
+
+    List<BaiVietEntity> findByMaTK(int maTK);
+
+    List<BaiVietEntity> findByMaTKAndLoaiChiaSe(int maTK, String loaiChiaSe);
+
+    List<BaiVietEntity> findByMaTKAndTrangThai(int maTK, String trangThai);
+
+    List<BaiVietEntity> findByTrangThai(String trangThai);
+
+    void deleteByMaBV(int maBV);
 
     @Query("""
         SELECT bv
@@ -42,5 +47,5 @@ public interface BaiVietRepository extends JpaRepository<BaiVietEntity, Integer>
         )
         ORDER BY bv.thoiGian DESC
     """)
-    List<BaiVietEntity> findAllVisiblePosts(@Param("currentUserId") Integer currentUserId);
+    Page<BaiVietEntity> findAllVisiblePosts(@Param("currentUserId") Integer currentUserId, Pageable pageable);
 }
