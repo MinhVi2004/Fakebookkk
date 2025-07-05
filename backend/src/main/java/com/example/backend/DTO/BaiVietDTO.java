@@ -15,6 +15,6 @@ public class BaiVietDTO {
     private String loaiChiaSe;
     private String noiDung;
     private String thoiGian;
-      private String trangThai;
-      private List<BaiVietDinhKemDTO> dinhKems;
+    private String trangThai;
+    private List<BaiVietDinhKemDTO> dinhKems;
 }
