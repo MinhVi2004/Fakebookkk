@@ -164,12 +164,21 @@ public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> 
     }
 
     @Override
-    public List<BaiVietDTO> findAllByOrderByThoiGianDesc() {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllByOrderByThoiGianDesc();
-        return baiVietEntities.stream()
-                .map(BaiVietMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+public List<BaiVietDTO> findAllByOrderByThoiGianDesc() {
+    List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllByOrderByThoiGianDesc();
+    return baiVietEntities.stream()
+            .map(BaiVietMapper::toDTO)
+            .collect(Collectors.toList());
+}
+
+@Override
+public List<BaiVietDTO> findAllVisiblePosts(int currentUserId) {
+    List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllVisiblePosts(currentUserId);
+    return baiVietEntities.stream()
+            .map(BaiVietMapper::toDTO)
+            .collect(Collectors.toList());
+}
+
     @Override
     @Transactional
     public boolean deleteBaiViet(int maBV) {
@@ -196,12 +205,12 @@ public BaiVietDTO createBaiVietWithDinhKems(BaiVietDTO baiVietDTO, List<String> 
         return false;
     }
     
-    @Override
-    public List<BaiVietDTO> findAllVisiblePosts(int currentUserId) {
-        List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllVisiblePosts(currentUserId);
-        return baiVietEntities.stream()
-                .map(BaiVietMapper::toDTO)
-                .collect(Collectors.toList());
-    }
+    // @Override
+    // public List<BaiVietDTO> findAllVisiblePosts(int currentUserId) {
+    //     List<BaiVietEntity> baiVietEntities = baiVietRepository.findAllVisiblePosts(currentUserId);
+    //     return baiVietEntities.stream()
+    //             .map(BaiVietMapper::toDTO)
+    //             .collect(Collectors.toList());
+    // }
 
 }
